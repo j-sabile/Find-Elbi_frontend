@@ -1,7 +1,10 @@
 <script lang="ts">
+  import Map from "./components/Map.svelte";
 </script>
 
-<main />
+<div>
+  <Map />
+</div>
 
 <style>
 </style>
