@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: Gabarito;
+    src: url(./assets/Gabarito-VariableFont_wght.ttf);
+  }
+  
+  html {
+    font-family: Gabarito;
+  }
+
 body {
     margin: 0;
 }
