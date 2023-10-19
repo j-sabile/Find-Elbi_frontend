@@ -2,10 +2,11 @@
   import { slide } from "svelte/transition";
 
   export let classes = "";
+  export let closed = true;
   let pillExtended = false;
 </script>
 
-<div class="flex flex-col absolute bg-white w-full box-border rounded-t-2xl bottompane {pillExtended ? 'extended' : ''}{classes}" transition:slide>
+<div class="flex flex-col absolute bg-white w-full box-border rounded-t-2xl bottompane {closed ? '' : pillExtended ? 'extended' : 'semi-extended'} {classes}" transition:slide>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="w-full bg-white rounded-t-2xl flex justify-center cursor-pointer" on:click={() => (pillExtended = !pillExtended)}>
@@ -18,15 +19,20 @@
 
 <style>
   .bottompane {
-    bottom: 0;
-    max-height: 100px;
+    bottom: 0px;
+    height: 0px;
+    transition: height 0.3s ease-in-out;
   }
 
   .pill {
     height: 5px;
     width: 40px;
   }
+
+  .semi-extended {
+    height: 150px;
+  }
   .extended {
-    min-height: calc(100vh - 60px);
+    height: calc(100vh - 60px);
   }
 </style>
