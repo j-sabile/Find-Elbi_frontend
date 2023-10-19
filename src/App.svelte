@@ -7,9 +7,7 @@
 <div class="flex flex-col h-screen w-screen min-h-screen max-h-screen relative">
   <Map classes="flex flex-grow z-0" />
   <SearchBar />
-  <BottomPanel>
-    <div class="overflow-auto" />
-  </BottomPanel>
+  <BottomPanel />
 </div>
 
 <style>

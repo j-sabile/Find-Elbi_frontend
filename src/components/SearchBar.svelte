@@ -3,7 +3,7 @@
   function handleSearch() {}
 </script>
 
-<div class="searchbar bg-white rounded-full self-center w-11/12">
+<div class="searchbar bg-white rounded-full self-center">
   <!-- {#if navStack.length > 0}
     <button class="px-4 text-xs font-semibold py-1 rounded-full outline-none" on:click={handleBack}>Back</button>
   {/if} -->
@@ -22,6 +22,9 @@
     display: flex;
     gap: 2px;
     justify-content: center;
+    box-sizing: border-box;
+    width: 80%;
+    max-width: 35rem;
   }
 
   .search {

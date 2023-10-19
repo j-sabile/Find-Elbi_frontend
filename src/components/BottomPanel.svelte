@@ -1,26 +1,32 @@
 <script>
+  import { slide } from "svelte/transition";
+
   export let classes = "";
   let pillExtended = false;
 </script>
 
-<div class="bottom-pane{pillExtended ? '-extended' : ''} flex flex-col bg-slate relative z-10 {classes}">
+<div class="flex flex-col absolute bg-white w-full box-border rounded-t-2xl bottompane {pillExtended ? 'extended' : ''}{classes}" transition:slide>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class="pill-holder absolute bg-white w-full flex justify-center rounded-t-full items-center" on:click={() => (pillExtended = !pillExtended)}>
-    <div class="pill h-1 w-7 bg-slate-200 rounded-full my-1 shadow-sm" />
+  <div class="w-full bg-white rounded-t-2xl flex justify-center cursor-pointer" on:click={() => (pillExtended = !pillExtended)}>
+    <div class="pill bg-neutral-300 rounded-full shadow-sm m-2" />
   </div>
-  <slot />
+  <div class="w-full overflow-auto">
+    <slot />
+  </div>
 </div>
 
 <style>
-  .bottom-pane {
+  .bottompane {
+    bottom: 0;
     max-height: 100px;
   }
-  .bottom-pane-extended {
-    min-height: calc(100vh - 80px);
+
+  .pill {
+    height: 5px;
+    width: 40px;
   }
-  .pill-holder {
-    height: 20px;
-    top: -19px;
+  .extended {
+    min-height: calc(100vh - 60px);
   }
 </style>
