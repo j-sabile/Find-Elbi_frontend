@@ -1,4 +1,5 @@
-import { FLOORS, TYPES } from "./constants";
+import type { IBuilding } from "../interfaces/IBuilding";
+import { COLLEGES, FLOORS, TYPES } from "./constants";
 
 // BUILDINGS
 // - School/UnivDepartment/Academic Building - College
@@ -14,7 +15,7 @@ import { FLOORS, TYPES } from "./constants";
 // - Bank
 // - Utilities/Support Facilities
 
-const buildings = [
+const buildings: IBuilding[] = [
   {
     id: "0001",
     name: "Men's Residence Hall",
@@ -43,6 +44,7 @@ const buildings = [
       [14.16148, 121.24005],
     ],
   },
+
   {
     id: "0002",
     name: "Freedom Park",
@@ -106,7 +108,7 @@ const buildings = [
     id: "0006",
     name: "Francisco O Santos",
     type: TYPES.ACADEMIC,
-    college: "College of Arts and Sciences",
+    college: COLLEGES.CAS,
     alternateNames: ["PhySci"],
     address: "Freedom Park",
     marker: [14.16425, 121.24204],
@@ -124,15 +126,20 @@ const buildings = [
       [14.16429, 121.24179],
       [14.16453, 121.24169],
     ],
-    floors: [FLOORS.F2],
-    f2: [
+    floors: [
       {
-        name: "PC-2",
-        poylgon: [
-          [14.16454, 121.2422],
-          [14.16447, 121.24224],
-          [14.16444, 121.24218],
-          [14.16451, 121.24214],
+        level: FLOORS.F2,
+        rooms: [
+          {
+            name: "PC-2",
+            alternateNames: [],
+            polygon: [
+              [14.16454, 121.2422],
+              [14.16447, 121.24224],
+              [14.16444, 121.24218],
+              [14.16451, 121.24214],
+            ],
+          },
         ],
       },
     ],
