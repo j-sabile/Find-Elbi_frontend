@@ -7,15 +7,23 @@
   let pillExtended = false;
 </script>
 
-{#if $mapStatus.status != STACKSTATUS.HOME}
+{#if $mapStatus.status !== STACKSTATUS.HOME}
   <div class="flex flex-col absolute bg-white w-full box-border rounded-t-2xl bottompane {pillExtended ? 'extended' : 'semi-extended'} {classes}" transition:slide>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="w-full bg-white rounded-t-2xl flex justify-center cursor-pointer" on:click={() => (pillExtended = !pillExtended)}>
       <div class="pill bg-neutral-300 rounded-full shadow-sm m-2" />
     </div>
-    <div class="w-full overflow-auto">
-      <slot />
+    <div class="w-full overflow-auto px-3">
+      {#each $mapStatus.searchResults as building, i}
+        <div class="py-2 px-2">
+          <div class="">{building.name}</div>
+          <div class="text-xs">{building.type}</div>
+        </div>
+        {#if i + 1 !== $mapStatus.searchResults.length}
+          <hr />
+        {/if}
+      {/each}
     </div>
   </div>
 {/if}

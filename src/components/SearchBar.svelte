@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { map } from "leaflet";
   import { STACKSTATUS } from "../data/constants";
   import { mapStack } from "../stores/mapStack";
   import { mapStatus } from "../stores/mapStatus";
+  import search from "../utils/search";
 
   let searchInput = "";
   function handleSearch(e: any) {
@@ -9,6 +11,8 @@
     mapStack.pushMapStatus($mapStatus);
     mapStatus.reset();
     mapStatus.setStatus(STACKSTATUS.SEARCH);
+    console.log(search(searchInput));
+    mapStatus.setSearchResults(search(searchInput));
   }
   function handleBack() {
     let temp = mapStack.popMapStatus();
@@ -24,7 +28,7 @@
 </script>
 
 <div class="searchbar bg-white rounded-full self-center">
-  {#if $mapStatus.status != STACKSTATUS.HOME}
+  {#if $mapStatus.status !== STACKSTATUS.HOME}
     <button class="px-4 text-xs font-semibold py-1 rounded-full outline-none" on:click={handleBack}>Back</button>
   {/if}
   <form on:submit={handleSearch} class="flex flex-row w-full">
