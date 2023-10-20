@@ -1,13 +1,14 @@
 <script>
   import { slide } from "svelte/transition";
+  import { mapStatus } from "../stores/mapStatus";
+  import { STACKSTATUS } from "../data/constants";
 
   export let classes = "";
-  export let closed = true;
   let pillExtended = false;
 </script>
 
-{#if !closed}
-  <div class="flex flex-col absolute bg-white w-full box-border rounded-t-2xl bottompane {closed ? '' : pillExtended ? 'extended' : 'semi-extended'} {classes}" transition:slide>
+{#if $mapStatus.status != STACKSTATUS.HOME}
+  <div class="flex flex-col absolute bg-white w-full box-border rounded-t-2xl bottompane {pillExtended ? 'extended' : 'semi-extended'} {classes}" transition:slide>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="w-full bg-white rounded-t-2xl flex justify-center cursor-pointer" on:click={() => (pillExtended = !pillExtended)}>
