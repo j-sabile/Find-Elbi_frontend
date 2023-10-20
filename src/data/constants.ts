@@ -22,8 +22,8 @@ export const FLOORS = {
   F3: "Floor 3",
 };
 
-export const STACKSTATUS = {
-  HOME: "Home",
-  SEARCH: "Search",
-  BUILDING: "Building",
-};
+export enum STACKSTATUS {
+  HOME = "Home",
+  SEARCH = "Search",
+  BUILDING = "Building",
+}
