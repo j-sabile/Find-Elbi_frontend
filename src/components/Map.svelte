@@ -1,18 +1,21 @@
 <script lang="ts">
   export let classes = "";
+  import { elbiMap } from "../stores/map";
   import L from "leaflet";
 
   function createMap(container: any) {
-    let map = L.map(container, {
-      zoomControl: false,
-      preferCanvas: true,
-      maxZoom: 19,
-      minZoom: 15,
-    }).setView([14.163, 121.24], 18);
+    elbiMap.set(
+      L.map(container, {
+        zoomControl: false,
+        preferCanvas: true,
+        maxZoom: 19,
+        minZoom: 15,
+      }).setView([14.163, 121.24], 18)
+    );
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 19,
-    }).addTo(map);
+    }).addTo($elbiMap);
   }
 </script>
 

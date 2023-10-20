@@ -1,20 +1,25 @@
 <script lang="ts">
-  import { map } from "leaflet";
   import { STACKSTATUS } from "../data/constants";
   import { mapStack } from "../stores/mapStack";
   import { mapStatus } from "../stores/mapStatus";
+  import { elbiMap } from "../stores/map";
+  import L from "leaflet";
   import search from "../utils/search";
 
   let searchInput = "";
   function handleSearch(e: any) {
     e.preventDefault();
     mapStack.pushMapStatus($mapStatus);
+
     mapStatus.reset();
     mapStatus.setStatus(STACKSTATUS.SEARCH);
-    console.log(search(searchInput));
-    mapStatus.setSearchResults(search(searchInput));
+    const searchResults = search(searchInput);
+    mapStatus.setSearchResults(searchResults);
+    const markers = searchResults.map((building) => new L.Marker(building.marker).bindTooltip(building.name).addTo($elbiMap));
+    mapStatus.setMarkers(markers);
   }
   function handleBack() {
+    $mapStatus.markers.forEach((marker) => marker.removeFrom($elbiMap));
     let temp = mapStack.popMapStatus();
     mapStatus.set(temp);
     searchInput = $mapStatus.searchInput;
