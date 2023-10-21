@@ -16,6 +16,7 @@ function createStore() {
     setSearchResults: (searchResults: IBuilding[]) => update((i) => ({ ...i, searchResults })),
     setMarkers: (markers: Marker[]) => update((i) => ({ ...i, markers })),
     setPolygons: (polygons: Polygon[]) => update((i) => ({ ...i, polygons })),
+    setSelectedBuilding: (selectedBuilding: IBuilding) => update((i) => ({ ...i, selectedBuilding })),
     reset: () => set(mapStatusDefault),
   };
 }

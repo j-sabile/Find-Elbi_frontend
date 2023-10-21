@@ -8,6 +8,7 @@ export interface IMapStatus {
   searchResults: IBuilding[];
   markers: Marker[];
   polygons: Polygon[];
+  selectedBuilding?: IBuilding;
 }
 
 export const mapStatusDefault: IMapStatus = {

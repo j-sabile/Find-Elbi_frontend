@@ -4,8 +4,8 @@
   import { elbiMap } from "../stores/map";
   import L from "leaflet";
   import search from "../utils/search";
-  import type { IBuilding } from "../interfaces/IBuilding";
   import * as mapStackUtil from "../utils/mapStackUtil";
+  import { handleSelectBuilding } from "../utils/mapUtil";
 
   function handleSearch(e: any) {
     e.preventDefault();
@@ -27,16 +27,6 @@
       searchResults.map((i) => i.marker),
       { padding: [50, 50] }
     );
-  }
-
-  function handleSelectBuilding(building: IBuilding) {
-    mapStackUtil.push($mapStatus);
-    mapStatus.setStatus(STACKSTATUS.BUILDING);
-    const polygons = [new L.Polygon(building.polygon).addTo($elbiMap)];
-    mapStatus.setPolygons(polygons);
-    mapStatus.setSearchInput(building.name);
-    mapStatus.setSearchInput(building.name);
-    $elbiMap.fitBounds(building.polygon, { padding: [50, 50] });
   }
 
   function handleBack() {

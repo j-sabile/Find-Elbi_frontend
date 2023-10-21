@@ -2,23 +2,10 @@
   import { slide } from "svelte/transition";
   import { mapStatus } from "../stores/mapStatus";
   import { STACKSTATUS } from "../data/constants";
-  import * as mapStackUtil from "../utils/mapStackUtil";
-  import type { IBuilding } from "../interfaces/IBuilding";
-  import { elbiMap } from "../stores/map";
-  import L from "leaflet";
+  import { handleSelectBuilding } from "../utils/mapUtil";
 
   export let classes = "";
   let pillExtended = false;
-
-  function handleSelectBuilding(building: IBuilding) {
-    mapStackUtil.push($mapStatus);
-    mapStatus.setStatus(STACKSTATUS.BUILDING);
-    const polygons = [new L.Polygon(building.polygon).addTo($elbiMap)];
-    mapStatus.setPolygons(polygons);
-    mapStatus.setSearchInput(building.name);
-    mapStatus.setSearchInput(building.name);
-    $elbiMap.fitBounds(building.polygon, { padding: [50, 50] });
-  }
 </script>
 
 {#if $mapStatus.status !== STACKSTATUS.HOME}
@@ -29,15 +16,21 @@
       <div class="pill bg-neutral-300 rounded-full shadow-sm m-2" />
     </div>
     <div class="w-full overflow-auto px-3">
-      {#each $mapStatus.searchResults as building, i}
-        <div class="py-2 px-2" on:click={() => handleSelectBuilding(building)} role="button" on:keydown={() => {}} tabindex="0">
-          <div class="">{building.name}</div>
-          <div class="text-xs">{building.type}</div>
-        </div>
-        {#if i + 1 !== $mapStatus.searchResults.length}
-          <hr />
-        {/if}
-      {/each}
+      {#if $mapStatus.status === STACKSTATUS.SEARCH}
+        {#each $mapStatus.searchResults as building, i}
+          <div class="py-2 px-2" on:click={() => handleSelectBuilding(building)} role="button" on:keydown={() => {}} tabindex="0">
+            <div class="">{building.name}</div>
+            <div class="text-xs">{building.type}</div>
+          </div>
+          {#if i + 1 !== $mapStatus.searchResults.length}
+            <hr />
+          {/if}
+        {/each}
+      {:else if $mapStatus.status === STACKSTATUS.BUILDING}
+        <div class="text-2xl">{$mapStatus.selectedBuilding?.name}</div>
+        <div class="text-sm">{$mapStatus.selectedBuilding?.type}</div>
+        <div class="text-sm">{$mapStatus.selectedBuilding?.address}, Batong Malake, Los Banos</div>
+      {/if}
     </div>
   </div>
 {/if}
