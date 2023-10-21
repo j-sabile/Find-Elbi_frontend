@@ -110,7 +110,7 @@ const buildings: IBuilding[] = [
     type: TYPES.ACADEMIC,
     college: COLLEGES.CAS,
     alternateNames: ["PhySci"],
-    address: "Freedom Park",
+    address: "Harold Cuzner Royal Palm Avenue",
     marker: [14.16425, 121.24204],
     polygon: [
       [14.16478, 121.24228],
@@ -129,6 +129,36 @@ const buildings: IBuilding[] = [
     floors: [
       {
         level: FLOORS.F2,
+        rooms: [
+          {
+            name: "PC-2",
+            alternateNames: [],
+            polygon: [
+              [14.16454, 121.2422],
+              [14.16447, 121.24224],
+              [14.16444, 121.24218],
+              [14.16451, 121.24214],
+            ],
+          },
+        ],
+      },
+      {
+        level: FLOORS.F1,
+        rooms: [
+          {
+            name: "PC-2",
+            alternateNames: [],
+            polygon: [
+              [14.16454, 121.2422],
+              [14.16447, 121.24224],
+              [14.16444, 121.24218],
+              [14.16451, 121.24214],
+            ],
+          },
+        ],
+      },
+      {
+        level: FLOORS.BASEMENT,
         rooms: [
           {
             name: "PC-2",

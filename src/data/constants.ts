@@ -16,10 +16,10 @@ export enum TYPES {
 
 export enum FLOORS {
   NONE = "",
-  BASEMENT = "Basement",
-  F1 = "Floor 1",
-  F2 = "Floor 2",
-  F3 = "Floor 3",
+  BASEMENT = "B",
+  F1 = "F1",
+  F2 = "F2",
+  F3 = "F3",
 }
 
 export enum STACKSTATUS {

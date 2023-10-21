@@ -1,5 +1,5 @@
 import { Marker, Polygon } from "leaflet";
-import { STACKSTATUS } from "../data/constants";
+import { FLOORS, STACKSTATUS } from "../data/constants";
 import type { IBuilding } from "./IBuilding";
 
 export interface IMapStatus {
@@ -9,6 +9,7 @@ export interface IMapStatus {
   markers: Marker[];
   polygons: Polygon[];
   selectedBuilding?: IBuilding;
+  selectedFloor?: FLOORS;
 }
 
 export const mapStatusDefault: IMapStatus = {
