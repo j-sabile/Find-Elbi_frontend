@@ -1,10 +1,24 @@
-<script>
+<script lang="ts">
   import { slide } from "svelte/transition";
   import { mapStatus } from "../stores/mapStatus";
   import { STACKSTATUS } from "../data/constants";
+  import * as mapStackUtil from "../utils/mapStackUtil";
+  import type { IBuilding } from "../interfaces/IBuilding";
+  import { elbiMap } from "../stores/map";
+  import L from "leaflet";
 
   export let classes = "";
   let pillExtended = false;
+
+  function handleSelectBuilding(building: IBuilding) {
+    mapStackUtil.push($mapStatus);
+    mapStatus.setStatus(STACKSTATUS.BUILDING);
+    const polygons = [new L.Polygon(building.polygon).addTo($elbiMap)];
+    mapStatus.setPolygons(polygons);
+    mapStatus.setSearchInput(building.name);
+    mapStatus.setSearchInput(building.name);
+    $elbiMap.fitBounds(building.polygon, { padding: [50, 50] });
+  }
 </script>
 
 {#if $mapStatus.status !== STACKSTATUS.HOME}
@@ -16,7 +30,7 @@
     </div>
     <div class="w-full overflow-auto px-3">
       {#each $mapStatus.searchResults as building, i}
-        <div class="py-2 px-2">
+        <div class="py-2 px-2" on:click={() => handleSelectBuilding(building)} role="button" on:keydown={() => {}} tabindex="0">
           <div class="">{building.name}</div>
           <div class="text-xs">{building.type}</div>
         </div>

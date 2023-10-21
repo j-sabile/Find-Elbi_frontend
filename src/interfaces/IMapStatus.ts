@@ -1,4 +1,4 @@
-import { Marker } from "leaflet";
+import { Marker, Polygon } from "leaflet";
 import { STACKSTATUS } from "../data/constants";
 import type { IBuilding } from "./IBuilding";
 
@@ -7,6 +7,7 @@ export interface IMapStatus {
   searchInput: string;
   searchResults: IBuilding[];
   markers: Marker[];
+  polygons: Polygon[];
 }
 
 export const mapStatusDefault: IMapStatus = {
@@ -14,4 +15,5 @@ export const mapStatusDefault: IMapStatus = {
   searchInput: "",
   searchResults: [],
   markers: [],
+  polygons: [],
 };

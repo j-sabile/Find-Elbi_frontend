@@ -3,10 +3,10 @@ import { STACKSTATUS } from "../data/constants";
 import type { IBuilding } from "../interfaces/IBuilding";
 import type { IMapStatus } from "../interfaces/IMapStatus";
 import { mapStatusDefault } from "../interfaces/IMapStatus";
-import { Marker } from "leaflet";
+import { Marker, Polygon } from "leaflet";
 
 function createStore() {
-  const { subscribe, set, update } = writable<IMapStatus>(mapStatusDefault);
+  const { subscribe, set, update } = writable<IMapStatus>({ ...mapStatusDefault });
 
   return {
     subscribe,
@@ -15,6 +15,7 @@ function createStore() {
     setStatus: (status: STACKSTATUS) => update((i) => ({ ...i, status })),
     setSearchResults: (searchResults: IBuilding[]) => update((i) => ({ ...i, searchResults })),
     setMarkers: (markers: Marker[]) => update((i) => ({ ...i, markers })),
+    setPolygons: (polygons: Polygon[]) => update((i) => ({ ...i, polygons })),
     reset: () => set(mapStatusDefault),
   };
 }

@@ -8,9 +8,8 @@ function createStore() {
 
   function pushMapStatus(mapStatus: IMapStatus) {
     update((arr) => {
-      console.log(mapStatus);
-      if (mapStatus.status === STACKSTATUS.HOME) return [mapStatus];
-      else if (mapStatus.status === STACKSTATUS.SEARCH) return [mapStatusDefault];
+      if (mapStatus.status === STACKSTATUS.HOME) return [mapStatusDefault];
+      else if (mapStatus.status === STACKSTATUS.SEARCH) return [mapStatusDefault, mapStatus];
       else if (mapStatus.status === STACKSTATUS.BUILDING) {
         if (arr[arr.length - 1].status === STACKSTATUS.BUILDING) {
           arr[arr.length - 1] = mapStatus;

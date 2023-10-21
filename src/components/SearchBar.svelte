@@ -1,34 +1,51 @@
 <script lang="ts">
   import { STACKSTATUS } from "../data/constants";
-  import { mapStack } from "../stores/mapStack";
   import { mapStatus } from "../stores/mapStatus";
   import { elbiMap } from "../stores/map";
   import L from "leaflet";
   import search from "../utils/search";
+  import type { IBuilding } from "../interfaces/IBuilding";
+  import * as mapStackUtil from "../utils/mapStackUtil";
 
-  let searchInput = "";
   function handleSearch(e: any) {
     e.preventDefault();
-    mapStack.pushMapStatus($mapStatus);
-
-    mapStatus.reset();
+    let tempSearchInput = $mapStatus.searchInput;
+    mapStatus.setSearchInput("");
+    mapStackUtil.push($mapStatus);
     mapStatus.setStatus(STACKSTATUS.SEARCH);
-    const searchResults = search(searchInput);
+    mapStatus.setSearchInput(tempSearchInput);
+    const searchResults = search(tempSearchInput);
     mapStatus.setSearchResults(searchResults);
-    const markers = searchResults.map((building) => new L.Marker(building.marker).bindTooltip(building.name).addTo($elbiMap));
+    const markers = searchResults.map((building) =>
+      new L.Marker(building.marker)
+        .bindTooltip(building.name)
+        .on("click", () => handleSelectBuilding(building))
+        .addTo($elbiMap)
+    );
     mapStatus.setMarkers(markers);
+    $elbiMap.fitBounds(
+      searchResults.map((i) => i.marker),
+      { padding: [50, 50] }
+    );
   }
+
+  function handleSelectBuilding(building: IBuilding) {
+    mapStackUtil.push($mapStatus);
+    mapStatus.setStatus(STACKSTATUS.BUILDING);
+    const polygons = [new L.Polygon(building.polygon).addTo($elbiMap)];
+    mapStatus.setPolygons(polygons);
+    mapStatus.setSearchInput(building.name);
+    mapStatus.setSearchInput(building.name);
+    $elbiMap.fitBounds(building.polygon, { padding: [50, 50] });
+  }
+
   function handleBack() {
-    $mapStatus.markers.forEach((marker) => marker.removeFrom($elbiMap));
-    let temp = mapStack.popMapStatus();
-    mapStatus.set(temp);
-    searchInput = $mapStatus.searchInput;
+    mapStackUtil.pop();
   }
 
   function handleLogStack(e: any) {
     e.preventDefault();
-    console.log("Map Stack:", $mapStack);
-    console.log("Map Status:", $mapStatus);
+    mapStackUtil.log();
   }
 </script>
 
@@ -37,7 +54,7 @@
     <button class="px-4 text-xs font-semibold py-1 rounded-full outline-none" on:click={handleBack}>Back</button>
   {/if}
   <form on:submit={handleSearch} class="flex flex-row w-full">
-    <input class="search px-4 py-1 rounded-full" placeholder="Find a place" bind:value={searchInput} tabindex="0" />
+    <input class="search px-4 py-1 rounded-full" placeholder="Find a place" bind:value={$mapStatus.searchInput} tabindex="0" />
     <button class="px-4 text-xs font-semibold py-1 rounded-full" type="submit" on:click={handleSearch}>Search</button>
     <button class="text-xs pe-2 font-semibold" on:click={handleLogStack}>Log</button>
   </form>
