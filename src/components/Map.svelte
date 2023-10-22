@@ -2,20 +2,40 @@
   export let classes = "";
   import { elbiMap } from "../stores/map";
   import L from "leaflet";
+  let prevZoom = 18;
 
   function createMap(container: any) {
     elbiMap.set(
       L.map(container, {
         zoomControl: false,
         preferCanvas: true,
-        maxZoom: 19,
+        maxZoom: 22,
         minZoom: 15,
-      }).setView([14.163, 121.24], 18)
+      })
+        .setView([14.163, 121.24], 18)
+        .on("zoom", (e) => handleZoomChange(e.target._zoom))
     );
+
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19,
     }).addTo($elbiMap);
+  }
+
+  const lvlChange = 18;
+  function handleZoomChange(level: number) {
+    if (level <= lvlChange && prevZoom > lvlChange) {
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo($elbiMap);
+      prevZoom = level;
+    } else if (level > lvlChange && prevZoom <= lvlChange) {
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+        subdomains: "abcd",
+        maxZoom: 22,
+      }).addTo($elbiMap);
+      prevZoom = level;
+    }
   }
 </script>
 

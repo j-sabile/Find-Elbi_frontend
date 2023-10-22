@@ -25,7 +25,7 @@
     mapStatus.setMarkers(markers);
     $elbiMap.fitBounds(
       searchResults.map((i) => i.marker),
-      { padding: [50, 50] }
+      { padding: [50, 50], maxZoom: 18 }
     );
   }
 

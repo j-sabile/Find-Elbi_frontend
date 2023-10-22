@@ -19,7 +19,7 @@ function pop() {
   if (temp.status === STACKSTATUS.SEARCH) {
     elbiMap.fitBounds(
       temp.searchResults.map((i) => i.marker),
-      { padding: [50, 50] }
+      { padding: [50, 50], maxZoom: 18 }
     );
   }
   return temp;
