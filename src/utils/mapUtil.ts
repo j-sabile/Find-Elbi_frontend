@@ -12,7 +12,7 @@ storeMapStatus.subscribe((i) => (mapStatus = i));
 storeElbiMap.subscribe((i) => (elbiMap = i));
 
 function handleSelectBuilding(building: IBuilding) {
-  mapStackUtil.push(mapStatus);
+  mapStackUtil.push(mapStatus, true);
   storeMapStatus.setStatus(STACKSTATUS.BUILDING);
   const polygons = [new L.Polygon(building.polygon).addTo(elbiMap)];
   storeMapStatus.setPolygons(polygons);

@@ -1,14 +1,34 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
   import { mapStatus } from "../stores/mapStatus";
-  import { FLOORS, STACKSTATUS } from "../data/constants";
+  import { elbiMap } from "../stores/map";
+  import type { IFloor } from "../interfaces/IFloor";
+  import { STACKSTATUS } from "../data/constants";
   import { handleSelectBuilding } from "../utils/mapUtil";
+  import * as mapStackUtil from "../utils/mapStackUtil";
+  import L from "leaflet";
 
   export let classes = "";
   let pillExtended = false;
 
-  function handleClickFloor(level: FLOORS) {
-    mapStatus.setSelectedFloor(level);
+  function handleClickFloor(floor: IFloor) {
+    console.log(floor.level, "is clicked");
+    console.log(floor);
+    if ($mapStatus.status !== STACKSTATUS.FLOOR) {
+      const temp = $mapStatus;
+      if (temp.selectedBuilding === undefined) return;
+      mapStackUtil.push($mapStatus, false);
+      mapStatus.reset();
+      mapStatus.setStatus(STACKSTATUS.FLOOR);
+      mapStatus.setSelectedBuilding(temp.selectedBuilding);
+      mapStatus.setPolygons(floor.rooms.map((room) => L.polygon(room.polygon, { color: "#028A0F" }).bindTooltip(room.name).addTo($elbiMap)));
+      mapStatus.setSearchInput(temp.searchInput);
+      console.log(temp);
+    } else {
+      $mapStatus.polygons.forEach((room) => room.removeFrom($elbiMap));
+      mapStatus.setPolygons(floor.rooms.map((room) => L.polygon(room.polygon, { color: "#028A0F" }).bindTooltip(room.name).addTo($elbiMap)));
+    }
+    mapStatus.setSelectedFloor(floor);
   }
 </script>
 
@@ -30,7 +50,7 @@
             <hr />
           {/if}
         {/each}
-      {:else if $mapStatus.status === STACKSTATUS.BUILDING}
+      {:else if [STACKSTATUS.BUILDING, STACKSTATUS.FLOOR].includes($mapStatus.status)}
         <div class="relative">
           <div class="text-2xl">{$mapStatus.selectedBuilding?.name}</div>
           <div class="text-sm">{$mapStatus.selectedBuilding?.type}</div>
@@ -42,7 +62,7 @@
       <div class="floors absolute p-4 flex flex-row gap-3">
         {#if $mapStatus.selectedBuilding?.floors !== undefined}
           {#each $mapStatus.selectedBuilding?.floors as floor}
-            <button class="p-2 bg-white floor-btn rounded-full shadow-sm {$mapStatus.selectedFloor === floor.level ? 'selected' : ''}" on:click={() => handleClickFloor(floor.level)}>{floor.level}</button>
+            <button class="p-2 bg-white floor-btn rounded-full shadow-sm {$mapStatus.selectedFloor?.level === floor.level ? 'selected' : 'a'}" on:click={() => handleClickFloor(floor)}>{floor.level}</button>
           {/each}
         {/if}
       </div>
@@ -51,10 +71,15 @@
 {/if}
 
 <style>
+  .a {
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+    background-color: white;
+  }
   .selected {
     background-color: #eeeeee;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
     transform: scale(1.1);
+    border: 2px solid grey;
     transition: transform 0.3s ease;
   }
 

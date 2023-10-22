@@ -26,6 +26,8 @@ export enum STACKSTATUS {
   HOME = "Home",
   SEARCH = "Search",
   BUILDING = "Building",
+  FLOOR = "Floor",
+  ROOM = "Room",
 }
 
 export enum COLLEGES {

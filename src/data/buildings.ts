@@ -146,7 +146,7 @@ const buildings: IBuilding[] = [
         level: FLOORS.F1,
         rooms: [
           {
-            name: "PC-2",
+            name: "PC-6",
             alternateNames: [],
             polygon: [
               [14.16454, 121.2422],
@@ -161,7 +161,7 @@ const buildings: IBuilding[] = [
         level: FLOORS.BASEMENT,
         rooms: [
           {
-            name: "PC-2",
+            name: "PC-99",
             alternateNames: [],
             polygon: [
               [14.16454, 121.2422],

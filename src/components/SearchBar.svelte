@@ -11,7 +11,7 @@
     e.preventDefault();
     let tempSearchInput = $mapStatus.searchInput;
     mapStatus.setSearchInput("");
-    mapStackUtil.push($mapStatus);
+    mapStackUtil.push($mapStatus, true);
     mapStatus.setStatus(STACKSTATUS.SEARCH);
     mapStatus.setSearchInput(tempSearchInput);
     const searchResults = search(tempSearchInput);
