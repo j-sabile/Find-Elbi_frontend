@@ -12,8 +12,6 @@
   let pillExtended = false;
 
   function handleClickFloor(floor: IFloor) {
-    console.log(floor.level, "is clicked");
-    console.log(floor);
     if ($mapStatus.status !== STACKSTATUS.FLOOR) {
       const temp = $mapStatus;
       if (temp.selectedBuilding === undefined) return;
@@ -23,7 +21,6 @@
       mapStatus.setSelectedBuilding(temp.selectedBuilding);
       mapStatus.setPolygons(floor.rooms.map((room) => L.polygon(room.polygon, { color: "#028A0F" }).bindTooltip(room.name).addTo($elbiMap)));
       mapStatus.setSearchInput(temp.searchInput);
-      console.log(temp);
     } else {
       $mapStatus.polygons.forEach((room) => room.removeFrom($elbiMap));
       mapStatus.setPolygons(floor.rooms.map((room) => L.polygon(room.polygon, { color: "#028A0F" }).bindTooltip(room.name).addTo($elbiMap)));

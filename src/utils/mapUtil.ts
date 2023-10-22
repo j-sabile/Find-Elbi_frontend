@@ -18,7 +18,7 @@ function handleSelectBuilding(building: IBuilding) {
   storeMapStatus.setPolygons(polygons);
   storeMapStatus.setSearchInput(building.name);
   storeMapStatus.setSelectedBuilding(building);
-  elbiMap.fitBounds(building.polygon, { padding: [50, 50] });
+  elbiMap.fitBounds(building.polygon, { padding: [50, 50], maxZoom: 18 });
 }
 
 export { handleSelectBuilding };

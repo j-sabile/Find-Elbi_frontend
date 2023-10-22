@@ -26,7 +26,6 @@ function pop() {
 }
 
 function push(i: IMapStatus, clearMap: boolean) {
-  console.log(i);
   if (clearMap) clearMapElements();
   storeMapStack.pushMapStatus(i);
   storeMapStatus.reset();

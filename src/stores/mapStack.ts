@@ -15,10 +15,7 @@ function createStore() {
           arr[arr.length - 1] = mapStatus;
           return arr;
         } else return [...arr, mapStatus];
-      } else {
-        console.log("SPECIAL CASE IN PUSH MAP STATUS");
-        return arr;
-      }
+      } else return arr;
     });
   }
 

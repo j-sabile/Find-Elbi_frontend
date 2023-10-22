@@ -2,7 +2,6 @@
   export let classes = "";
   import { elbiMap } from "../stores/map";
   import L, { TileLayer } from "leaflet";
-  let prevZoom = 18;
   let tileOut: TileLayer | undefined, tileIn: TileLayer | undefined;
 
   function createMap(container: any) {
@@ -22,28 +21,21 @@
     }).addTo($elbiMap);
   }
 
-  const lvlChange = 19;
   function handleZoomChange(level: number) {
-    console.log(level);
-    console.log(tileIn, tileOut);
-    if (level <= lvlChange && tileIn !== undefined) {
-      console.log("CASE1");
+    if (level < 19 && tileIn !== undefined) {
       tileOut = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 19,
       }).addTo($elbiMap);
       $elbiMap.removeLayer(tileIn);
       tileIn = undefined;
-      prevZoom = level;
-    } else if (level > lvlChange && tileOut !== undefined) {
-      console.log("CASE2");
+    } else if (level >= 19 && tileOut !== undefined) {
       tileIn = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
         subdomains: "abcd",
         maxZoom: 22,
       }).addTo($elbiMap);
       $elbiMap.removeLayer(tileOut);
       tileOut = undefined;
-      prevZoom = level;
     }
   }
 </script>
