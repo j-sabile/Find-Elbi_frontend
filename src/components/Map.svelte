@@ -1,8 +1,9 @@
 <script lang="ts">
   export let classes = "";
   import { elbiMap } from "../stores/map";
-  import L from "leaflet";
+  import L, { TileLayer } from "leaflet";
   let prevZoom = 18;
+  let tileOut: TileLayer | undefined, tileIn: TileLayer | undefined;
 
   function createMap(container: any) {
     elbiMap.set(
@@ -16,24 +17,32 @@
         .on("zoom", (e) => handleZoomChange(e.target._zoom))
     );
 
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    tileOut = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo($elbiMap);
   }
 
-  const lvlChange = 18;
+  const lvlChange = 19;
   function handleZoomChange(level: number) {
-    if (level <= lvlChange && prevZoom > lvlChange) {
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    console.log(level);
+    console.log(tileIn, tileOut);
+    if (level <= lvlChange && tileIn !== undefined) {
+      console.log("CASE1");
+      tileOut = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 19,
       }).addTo($elbiMap);
+      $elbiMap.removeLayer(tileIn);
+      tileIn = undefined;
       prevZoom = level;
-    } else if (level > lvlChange && prevZoom <= lvlChange) {
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    } else if (level > lvlChange && tileOut !== undefined) {
+      console.log("CASE2");
+      tileIn = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
         subdomains: "abcd",
         maxZoom: 22,
       }).addTo($elbiMap);
+      $elbiMap.removeLayer(tileOut);
+      tileOut = undefined;
       prevZoom = level;
     }
   }
