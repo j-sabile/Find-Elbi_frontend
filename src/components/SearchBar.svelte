@@ -46,7 +46,7 @@
   <form on:submit={handleSearch} class="flex flex-row w-full">
     <input class="search px-4 py-1 rounded-full" placeholder="Find a place" bind:value={$mapStatus.searchInput} tabindex="0" />
     <button class="px-4 text-xs font-semibold py-1 rounded-full" type="submit" on:click={handleSearch}>Search</button>
-    <button class="text-xs pe-2 font-semibold" on:click={handleLogStack}>Log</button>
+    <!-- <button class="text-xs pe-2 font-semibold" on:click={handleLogStack}>Log</button> -->
   </form>
 </div>
 
