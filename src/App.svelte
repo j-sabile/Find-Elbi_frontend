@@ -4,6 +4,7 @@
   import SearchBar from "./components/SearchBar.svelte";
   import GisSidebar from "./components/GisSidebar.svelte";
   import GisCoordWidget from "./components/GisCoordWidget.svelte";
+  import AddBuildingTool from "./components/AddBuildingTool.svelte";
 </script>
 
 <div class="flex flex-col h-screen w-screen min-h-screen max-h-screen relative overflow-hidden bg-slate-900">
@@ -12,6 +13,7 @@
   <BottomPanel />
   <GisSidebar />
   <GisCoordWidget />
+  <!-- <AddBuildingTool /> -->
 </div>
 
 
