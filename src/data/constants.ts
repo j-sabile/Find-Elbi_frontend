@@ -14,6 +14,16 @@ export enum TYPES {
   LAUNDRY = "Laundry Service",
 }
 
+export enum ROOM_TYPES {
+  ACADEMIC = "Academic Room",
+  FACULTY = "Faculty Room",
+  ADMIN = "Administrative Room",
+  LABORATORY = "Laboratory",
+  LECTURE_HALL = "Lecture Hall",
+  DORM = "Dorm Room",
+  CR = "Comfort Room CR",
+}
+
 export enum FLOORS {
   NONE = "",
   BASEMENT = "B",

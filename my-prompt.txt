@@ -1,0 +1,11 @@
+Find Elbi
+- interactive campus map web gis, web and mobile responsive
+- user intuitive
+
+has search function, show search results (show also what type each)
+shows boundaries of selected building, also shows the rooms per floor
+has tools like nearest facility network (you can choose what type of building) to show nearest building
+has tools likes proximity buffer query (shows all buildings inside the circle buffer, can edit radius, what types of buildings)
+has tools to measure distance (geodeisc path), and projected area
+can switch basemap layers
+shows crs info 

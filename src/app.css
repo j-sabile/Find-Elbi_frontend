@@ -3,14 +3,79 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: Gabarito;
-    src: url(./assets/Gabarito-VariableFont_wght.ttf);
-  }
-  
-  html {
-    font-family: Gabarito;
-  }
+  font-family: Gabarito;
+  src: url(./assets/Gabarito-VariableFont_wght.ttf);
+}
+
+html {
+  font-family: Gabarito;
+}
 
 body {
-    margin: 0;
+  margin: 0;
 }
+
+@layer components {
+  /* ─── Layout ─── */
+  .surface {
+    @apply bg-white border border-gray-200 rounded-2xl shadow-lg;
+  }
+  .card {
+    @apply bg-white border border-gray-200 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50 hover:shadow-lg;
+  }
+  .panel {
+    @apply bg-white border border-gray-200 rounded-2xl shadow-lg p-4 flex flex-col gap-4;
+  }
+  .floating {
+    @apply absolute z-[1000] bg-white border border-gray-200 rounded-2xl shadow-lg;
+  }
+  .row {
+    @apply flex items-center justify-between gap-3;
+  }
+  .col {
+    @apply flex flex-col gap-3;
+  }
+  .divider {
+    @apply border-t border-gray-200;
+  }
+
+  /* ─── List ─── */
+  .list {
+    @apply flex flex-col divide-y divide-gray-200;
+  }
+  .list-item {
+    @apply flex items-center justify-between gap-3 p-3 hover:bg-gray-50 transition-colors duration-200 cursor-pointer;
+  }
+
+  /* ─── Buttons ─── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .icon-btn {
+    @apply flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-200;
+  }
+
+  /* ─── Form Inputs ─── */
+  .input {
+    @apply w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-200;
+  }
+
+  /* ─── Typography ─── */
+  .text-title {
+    @apply text-lg font-semibold tracking-tight text-gray-900;
+  }
+  .text-body {
+    @apply text-sm text-gray-700;
+  }
+  .text-meta {
+    @apply text-xs text-gray-500;
+  }
+
+  /* ─── Badge ─── */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium;
+  }
+}

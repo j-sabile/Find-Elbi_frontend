@@ -1,5 +1,5 @@
 import type { IBuilding } from "../interfaces/IBuilding";
-import { COLLEGES, FLOORS, TYPES } from "./constants";
+import { COLLEGES, FLOORS, ROOM_TYPES, TYPES } from "./constants";
 
 // BUILDINGS
 // - School/UnivDepartment/Academic Building - College
@@ -141,6 +141,8 @@ const buildings: IBuilding[] = [
           {
             name: "Comfort Room",
             alternateNames: [],
+            code: "ICS-CR-F2-01",
+            roomType: ROOM_TYPES.CR,
             polygon: [
               [14.164465406769273, 121.242031418479992],
               [14.16441795549045, 121.242053099672658],
@@ -151,6 +153,8 @@ const buildings: IBuilding[] = [
           {
             name: "PC Lab 01",
             alternateNames: [],
+            code: "ICS-PC1",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.164480198331846, 121.242066064372674],
               [14.164432887032339, 121.24208789994256],
@@ -161,6 +165,8 @@ const buildings: IBuilding[] = [
           {
             name: "PC Lab 02",
             alternateNames: [],
+            code: "ICS-PC2",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.164509780569517, 121.242135354079327],
               [14.164462751907975, 121.242157504658567],
@@ -171,6 +177,8 @@ const buildings: IBuilding[] = [
           {
             name: "PC Lab 03",
             alternateNames: [],
+            code: "ICS-PC3",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.164539362807188, 121.24220464378598],
               [14.164492615887682, 121.242227107286474],
@@ -181,6 +189,8 @@ const buildings: IBuilding[] = [
           {
             name: "PC Lab 04",
             alternateNames: [],
+            code: "ICS-PC4",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.164431435937950406, 121.24215044170619636],
               [14.164396109499434089, 121.24216699361802524],
@@ -191,6 +201,8 @@ const buildings: IBuilding[] = [
           {
             name: "PC Lab 05",
             alternateNames: [],
+            code: "ICS-PC5",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.16446024088269623, 121.2422174111008818],
               [14.164425117300474745, 121.2422341883182662],
@@ -201,6 +213,8 @@ const buildings: IBuilding[] = [
           {
             name: "HPC",
             alternateNames: [],
+            code: "ICS-HPC",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.164402630993204582, 121.24208347231151092],
               [14.164367101698393433, 121.24209979891778428],
@@ -211,6 +225,8 @@ const buildings: IBuilding[] = [
           {
             name: "Mega Hall",
             alternateNames: [],
+            code: "ICS-MH",
+            roomType: ROOM_TYPES.LECTURE_HALL,
             polygon: [
               [14.1643757485889177, 121.242283266037709],
               [14.164305628209659, 121.24231696128845],
@@ -221,6 +237,8 @@ const buildings: IBuilding[] = [
           {
             name: "Comfort Room",
             alternateNames: [],
+            code: "ICS-CR-F2-02",
+            roomType: ROOM_TYPES.CR,
             polygon: [
               [14.1642756007326951, 121.242118141134395],
               [14.1642281494454196, 121.242139822317674],
@@ -236,6 +254,8 @@ const buildings: IBuilding[] = [
           {
             name: "Comfort Room",
             alternateNames: [],
+            code: "ICS-CR-F3-01",
+            roomType: ROOM_TYPES.CR,
             polygon: [
               [14.164465406769273, 121.242031418479992],
               [14.16441795549045, 121.242053099672658],
@@ -246,6 +266,8 @@ const buildings: IBuilding[] = [
           {
             name: "GS Room",
             alternateNames: [],
+            code: "ICS-GS",
+            roomType: ROOM_TYPES.ADMIN,
             polygon: [
               [14.164480198331846, 121.242066064372674],
               [14.164432887032339, 121.24208789994256],
@@ -256,6 +278,8 @@ const buildings: IBuilding[] = [
           {
             name: "PC Lab 06",
             alternateNames: [],
+            code: "ICS-PC6",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.164509780569517, 121.242135354079327],
               [14.164462751907975, 121.242157504658567],
@@ -266,6 +290,8 @@ const buildings: IBuilding[] = [
           {
             name: "PC Lab 07",
             alternateNames: [],
+            code: "ICS-PC7",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.164539362807188, 121.24220464378598],
               [14.164492615887682, 121.242227107286474],
@@ -276,6 +302,8 @@ const buildings: IBuilding[] = [
           {
             name: "PC Lab 08",
             alternateNames: [],
+            code: "ICS-PC8",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.164431435937950406, 121.24215044170619636],
               [14.164396109499434089, 121.24216699361802524],
@@ -286,6 +314,8 @@ const buildings: IBuilding[] = [
           {
             name: "PC Lab 09",
             alternateNames: [],
+            code: "ICS-PC9",
+            roomType: ROOM_TYPES.LABORATORY,
             polygon: [
               [14.16446024088269623, 121.2422174111008818],
               [14.164425117300474745, 121.2422341883182662],
@@ -296,6 +326,8 @@ const buildings: IBuilding[] = [
           {
             name: "Switch Hub Room",
             alternateNames: [],
+            code: "ICS-SHR",
+            roomType: ROOM_TYPES.ADMIN,
             polygon: [
               [14.164402630993204582, 121.24208347231151092],
               [14.164367101698393433, 121.24209979891778428],
@@ -306,6 +338,8 @@ const buildings: IBuilding[] = [
           {
             name: "Lecture Hall 3",
             alternateNames: [],
+            code: "ICS-LH3",
+            roomType: ROOM_TYPES.LECTURE_HALL,
             polygon: [
               [14.1643375374826253, 121.242195283290232],
               [14.1642668888275393, 121.242228391803062],
@@ -316,6 +350,8 @@ const buildings: IBuilding[] = [
           {
             name: "Lecture Hall 4",
             alternateNames: [],
+            code: "ICS-LH4",
+            roomType: ROOM_TYPES.LECTURE_HALL,
             polygon: [
               [14.1643757485889177, 121.242283266037709],
               [14.164305628209659, 121.24231696128845],
@@ -326,6 +362,8 @@ const buildings: IBuilding[] = [
           {
             name: "Comfort Room",
             alternateNames: [],
+            code: "ICS-CR-F3-02",
+            roomType: ROOM_TYPES.CR,
             polygon: [
               [14.1642756007326951, 121.242118141134395],
               [14.1642281494454196, 121.242139822317674],
@@ -819,7 +857,7 @@ const buildings: IBuilding[] = [
       [14.167484, 121.242494],
       [14.167447, 121.242566],
       [14.167268, 121.242467],
-      [14.167569, 121.241915]
+      [14.167569, 121.241915],
     ],
   },
   {
@@ -847,7 +885,7 @@ const buildings: IBuilding[] = [
       [14.164865, 121.239828],
       [14.164984, 121.239683],
       [14.165087, 121.239706],
-      [14.165074, 121.239859]
+      [14.165074, 121.239859],
     ],
   },
   {
@@ -870,7 +908,7 @@ const buildings: IBuilding[] = [
       [14.164825, 121.244189],
       [14.164771, 121.244047],
       [14.164909, 121.243996],
-      [14.164963, 121.244134]
+      [14.164963, 121.244134],
     ],
   },
   {
@@ -884,7 +922,7 @@ const buildings: IBuilding[] = [
       [14.161736, 121.242489],
       [14.161511, 121.242635],
       [14.161777, 121.243057],
-      [14.162001, 121.242907]
+      [14.162001, 121.242907],
     ],
   },
   {
@@ -898,7 +936,7 @@ const buildings: IBuilding[] = [
       [14.161346, 121.242768],
       [14.161479, 121.242977],
       [14.161348, 121.243065],
-      [14.161217, 121.242849]
+      [14.161217, 121.242849],
     ],
   },
   {
@@ -914,7 +952,7 @@ const buildings: IBuilding[] = [
       [14.16219, 121.242416],
       [14.162131, 121.24233],
       [14.162048, 121.242386],
-      [14.161991, 121.242296]
+      [14.161991, 121.242296],
     ],
   },
   {
@@ -934,7 +972,7 @@ const buildings: IBuilding[] = [
       [14.161734, 121.240053],
       [14.162261, 121.239809],
       [14.162316, 121.239938],
-      [14.162545, 121.239841]
+      [14.162545, 121.239841],
     ],
   },
 ];

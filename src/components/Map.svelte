@@ -6,16 +6,18 @@
   import { mapStatus } from "../stores/mapStatus";
   import L, { type TileLayer, type CircleMarker, type Polyline, type Polygon, type Circle } from "leaflet";
   import buildings from "../data/buildings";
-  import {
-    findNearestBuilding,
-    getHaversineDistance,
-    calculatePolygonArea,
-    calculatePolygonPerimeter,
-  } from "../utils/gisConvert";
+  import { findNearestBuilding, getHaversineDistance, calculatePolygonArea, calculatePolygonPerimeter } from "../utils/gisConvert";
   import { handleSelectBuilding } from "../utils/mapUtil";
 
   // ─── Tile layer references ──────────────────────────────────────────────────
   const TILE_URLS: Record<BasemapType, { url: string; options: any }> = {
+    street: {
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      options: {
+        attribution: "Tiles &copy; Esri — Source: Esri, HERE, Garmin, USGS, NGA, EPA, USDA, NPS",
+        maxZoom: 22,
+      },
+    },
     osm: {
       url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
       options: {
@@ -23,22 +25,11 @@
         maxZoom: 22,
       },
     },
-    carto: {
-      url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      options: { subdomains: "abcd", maxZoom: 22 },
-    },
     satellite: {
       url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       options: {
         attribution: "Tiles &copy; Esri",
         maxZoom: 22,
-      },
-    },
-    topo: {
-      url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-      options: {
-        attribution: "Map data: &copy; OpenStreetMap, SRTM | Rendering: &copy; OpenTopoMap",
-        maxZoom: 17,
       },
     },
   };
@@ -60,16 +51,16 @@
   // ─── Campus boundary polygon (rough bounding area of UPLB) ──────────────────
   const CAMPUS_BOUNDARY: [number, number][] = [
     [14.1649, 121.2371],
-    [14.1679, 121.2390],
+    [14.1679, 121.239],
     [14.1679, 121.2435],
     [14.1658, 121.2468],
-    [14.1635, 121.2480],
+    [14.1635, 121.248],
     [14.1601, 121.2478],
     [14.1572, 121.2462],
-    [14.1558, 121.2430],
+    [14.1558, 121.243],
     [14.1565, 121.2395],
     [14.1589, 121.2371],
-    [14.1620, 121.2360],
+    [14.162, 121.236],
     [14.1649, 121.2371],
   ];
 
@@ -81,12 +72,11 @@
         preferCanvas: true,
         maxZoom: 22,
         minZoom: 13,
-      })
-        .setView([14.163, 121.24], 17)
+      }).setView([14.163, 121.24], 17),
     );
 
     // Add custom zoom control in top-left
-    L.control.zoom({ position: "topleft" }).addTo($elbiMap);
+    // L.control.zoom({ position: "topleft" }).addTo($elbiMap);
 
     // Load initial tile layer
     applyBasemap($gisStore.activeBasemap);
@@ -188,13 +178,25 @@
     // Horizontal lines (constant lat)
     for (let lat = minLat; lat <= maxLat; lat = Math.round((lat + STEP) * 10000) / 10000) {
       gridLines.push(
-        L.polyline([[lat, minLng], [lat, maxLng]], gridStyle).addTo($elbiMap)
+        L.polyline(
+          [
+            [lat, minLng],
+            [lat, maxLng],
+          ],
+          gridStyle,
+        ).addTo($elbiMap),
       );
     }
     // Vertical lines (constant lng)
     for (let lng = minLng; lng <= maxLng; lng = Math.round((lng + STEP) * 10000) / 10000) {
       gridLines.push(
-        L.polyline([[minLat, lng], [maxLat, lng]], gridStyle).addTo($elbiMap)
+        L.polyline(
+          [
+            [minLat, lng],
+            [maxLat, lng],
+          ],
+          gridStyle,
+        ).addTo($elbiMap),
       );
     }
   }
@@ -240,13 +242,16 @@
         weight: 2,
       })
         .bindTooltip(`${r.building.name} — ${r.distance.toFixed(0)}m`, { direction: "top" })
-        .addTo($elbiMap)
+        .addTo($elbiMap),
     );
   }
 
   function clearBuffer() {
     if (!$elbiMap) return;
-    if (bufferCircle) { bufferCircle.removeFrom($elbiMap); bufferCircle = undefined; }
+    if (bufferCircle) {
+      bufferCircle.removeFrom($elbiMap);
+      bufferCircle = undefined;
+    }
     bufferMarkers.forEach((m) => m.removeFrom($elbiMap));
     bufferMarkers = [];
   }
@@ -305,9 +310,18 @@
 
   function clearNearest() {
     if (!$elbiMap) return;
-    if (nearestLine) { nearestLine.removeFrom($elbiMap); nearestLine = undefined; }
-    if (nearestOriginMarker) { nearestOriginMarker.removeFrom($elbiMap); nearestOriginMarker = undefined; }
-    if (nearestDestMarker) { nearestDestMarker.removeFrom($elbiMap); nearestDestMarker = undefined; }
+    if (nearestLine) {
+      nearestLine.removeFrom($elbiMap);
+      nearestLine = undefined;
+    }
+    if (nearestOriginMarker) {
+      nearestOriginMarker.removeFrom($elbiMap);
+      nearestOriginMarker = undefined;
+    }
+    if (nearestDestMarker) {
+      nearestDestMarker.removeFrom($elbiMap);
+      nearestDestMarker = undefined;
+    }
   }
 
   // ─── GIS Tool: Measurement ───────────────────────────────────────────────────
@@ -345,7 +359,10 @@
     } else if ($gisStore.gisTool === "measure_area" && points.length >= 3) {
       // Update filled polygon
       if (measurePolygon) measurePolygon.removeFrom($elbiMap);
-      if (measureLine) { measureLine.removeFrom($elbiMap); measureLine = undefined; }
+      if (measureLine) {
+        measureLine.removeFrom($elbiMap);
+        measureLine = undefined;
+      }
       measurePolygon = L.polygon(points, {
         color: "#10b981",
         fillColor: "#10b981",
@@ -362,8 +379,14 @@
 
   function clearMeasurements() {
     if (!$elbiMap) return;
-    if (measureLine) { measureLine.removeFrom($elbiMap); measureLine = undefined; }
-    if (measurePolygon) { measurePolygon.removeFrom($elbiMap); measurePolygon = undefined; }
+    if (measureLine) {
+      measureLine.removeFrom($elbiMap);
+      measureLine = undefined;
+    }
+    if (measurePolygon) {
+      measurePolygon.removeFrom($elbiMap);
+      measurePolygon = undefined;
+    }
     measureNodes.forEach((n) => n.removeFrom($elbiMap));
     measureNodes = [];
   }

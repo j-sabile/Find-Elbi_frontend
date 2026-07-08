@@ -79,7 +79,7 @@
       draggable: true,
       icon: L.divIcon({
         className: "custom-vertex-icon",
-        html: `<div class="w-5 h-5 bg-emerald-400 border-2 border-slate-900 rounded-full shadow-lg flex items-center justify-center text-[10px] font-bold text-slate-950 hover:bg-emerald-300 transition-colors cursor-move">${index + 1}</div>`,
+        html: `<div class="w-5 h-5 bg-blue-600 border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-[10px] font-semibold text-white hover:bg-blue-700 transition-colors cursor-move">${index + 1}</div>`,
         iconSize: [20, 20],
         iconAnchor: [10, 10]
       })
@@ -117,8 +117,8 @@
     if (polygonPoints.length >= 2) {
       if (!polygonLayer) {
         polygonLayer = L.polygon(polygonPoints, {
-          color: "#10b981", // Emerald-500
-          fillColor: "#10b981",
+          color: "#2563eb", // blue-600
+          fillColor: "#2563eb",
           fillOpacity: 0.15,
           weight: 3,
         }).addTo($elbiMap);
@@ -139,7 +139,7 @@
         centroidMarker = L.marker(cent, {
           icon: L.divIcon({
             className: "custom-centroid-icon",
-            html: `<div class="w-5 h-5 bg-amber-500 border-2 border-slate-900 rounded-full shadow-xl flex items-center justify-center text-[10px] font-black text-white hover:scale-110 transition-transform">C</div>`,
+            html: `<div class="w-5 h-5 bg-blue-50 border border-blue-300 rounded-full shadow-lg flex items-center justify-center text-[10px] font-semibold text-blue-600 hover:scale-110 transition-transform">C</div>`,
             iconSize: [20, 20],
             iconAnchor: [10, 10]
           })
@@ -219,7 +219,7 @@
     vertexMarkers.forEach((marker, idx) => {
       marker.setIcon(L.divIcon({
         className: "custom-vertex-icon",
-        html: `<div class="w-5 h-5 bg-emerald-400 border-2 border-slate-900 rounded-full shadow-lg flex items-center justify-center text-[10px] font-bold text-slate-950 hover:bg-emerald-300 transition-colors cursor-move">${idx + 1}</div>`,
+        html: `<div class="w-5 h-5 bg-blue-600 border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-[10px] font-semibold text-white hover:bg-blue-700 transition-colors cursor-move">${idx + 1}</div>`,
         iconSize: [20, 20],
         iconAnchor: [10, 10]
       }));
@@ -310,8 +310,8 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find(k => COLLEGES
     // Add to preview layers on map
     if ($elbiMap && draftLayers) {
       const pLayer = L.polygon(draft.polygon, {
-        color: "#6366f1", // Indigo color for drafts
-        fillColor: "#6366f1",
+        color: "#2563eb", // blue-600
+        fillColor: "#2563eb",
         fillOpacity: 0.1,
         weight: 2,
         dashArray: "4 4"
@@ -320,9 +320,9 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find(k => COLLEGES
       const mLayer = L.marker(draft.marker, {
         icon: L.divIcon({
           className: "custom-draft-icon",
-          html: `<div class="w-4 h-4 bg-indigo-500 border border-white rounded-full shadow-lg flex items-center justify-center text-[8px] font-bold text-white font-mono">D</div>`,
-          iconSize: [16, 16],
-          iconAnchor: [8, 8]
+          html: `<div class="w-5 h-5 bg-blue-500 border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-[10px] font-semibold text-white">D</div>`,
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
         })
       }).bindTooltip(`<b>${draft.name}</b> (Draft ${draft.id})<br>${draft.type}`, { direction: "top" });
 
@@ -371,104 +371,101 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find(k => COLLEGES
 </script>
 
 <!-- Add Building Floating Card -->
-<div class="absolute top-4 left-4 z-[1000] flex flex-col pointer-events-auto max-h-[calc(100vh-6rem)] md:max-h-[calc(100vh-4rem)] select-none">
+<div class="absolute top-4 left-4 z-20 flex flex-col pointer-events-auto select-none">
   {#if !isOpen}
     <!-- Collapsed Toggle Button -->
     <button
-      class="bg-slate-900 border border-slate-800 text-white rounded-lg shadow-2xl p-3 flex items-center justify-center hover:bg-slate-800 transition-all hover:scale-105"
+      class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-200"
       on:click={() => (isOpen = true)}
       title="Open Building Adder Tool"
     >
-      <svg class="h-6 w-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <svg class="w-5 h-5 shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     </button>
   {:else}
     <!-- Expanded Floating Panel -->
-    <div class="w-80 md:w-96 bg-slate-950/95 border border-slate-800 rounded-xl shadow-2xl backdrop-blur-lg flex flex-col overflow-hidden text-slate-200 max-h-[75vh]">
+    <div class="w-80 md:w-96 bg-white border border-gray-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
       
       <!-- Panel Header -->
-      <div class="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <div class="p-4 flex items-center justify-between gap-3 border-b border-gray-200">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <div>
-            <h1 class="text-xs font-bold uppercase tracking-wider text-slate-100">Add Building Tool</h1>
-            <p class="text-[9px] text-slate-400">Interactive Polygon Creator</p>
+          <div class="flex flex-col gap-3">
+            <h1 class="text-lg font-semibold tracking-tight text-gray-900">Add Building Tool</h1>
+            <p class="text-xs text-gray-500">Interactive Polygon Creator</p>
           </div>
         </div>
-        <button class="text-slate-400 hover:text-white transition-colors" on:click={() => (isOpen = false)}>
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <button class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-200" on:click={() => (isOpen = false)}>
+          <svg class="w-5 h-5 shrink-0 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
       <!-- Tabs Navigation -->
-      <div class="flex bg-slate-900/50 border-b border-slate-800 text-xs font-semibold">
+      <div class="flex items-center justify-between gap-3 p-4 border-b border-gray-200">
         <button
-          class="flex-1 py-2 text-center border-b-2 transition-all {activeTab === 'form' ? 'text-emerald-400 border-emerald-400 bg-slate-900/30' : 'text-slate-400 border-transparent hover:text-slate-200'}"
+          class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors duration-200 {activeTab === 'form' ? 'bg-blue-50 border-blue-300 text-blue-600' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}"
           on:click={() => (activeTab = 'form')}
         >
-          Form Details
+          Form
         </button>
         <button
-          class="flex-1 py-2 text-center border-b-2 transition-all {activeTab === 'code' ? 'text-emerald-400 border-emerald-400 bg-slate-900/30' : 'text-slate-400 border-transparent hover:text-slate-200'}"
+          class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors duration-200 {activeTab === 'code' ? 'bg-blue-50 border-blue-300 text-blue-600' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}"
           on:click={() => (activeTab = 'code')}
         >
-          View Code
+          Code
         </button>
         <button
-          class="flex-1 py-2 text-center border-b-2 transition-all relative {activeTab === 'drafts' ? 'text-emerald-400 border-emerald-400 bg-slate-900/30' : 'text-slate-400 border-transparent hover:text-slate-200'}"
+          class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors duration-200 relative {activeTab === 'drafts' ? 'bg-blue-50 border-blue-300 text-blue-600' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}"
           on:click={() => (activeTab = 'drafts')}
         >
           Drafts ({drafts.length})
-          {#if drafts.length > 0}
-            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500" />
-          {/if}
         </button>
       </div>
 
       <!-- Tab Content Area -->
-      <div class="flex-grow overflow-y-auto p-4 flex flex-col gap-4 text-xs max-h-[55vh]">
+      <div class="flex flex-col gap-3 p-4 overflow-y-auto max-h-96">
 
         {#if activeTab === 'form'}
           <!-- DRAWING CONTROLS -->
-          <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-3 flex flex-col gap-2.5">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-300">Map Drawing Controls</span>
-              <span class="text-[10px] font-mono {isDrawing ? 'text-emerald-400' : 'text-slate-500'}">
-                ● {isDrawing ? 'DRAWING ACTIVE' : 'INACTIVE'}
+          <div class="bg-white border border-gray-200 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50 hover:shadow-lg flex flex-col gap-3">
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-sm text-gray-700 font-semibold">Map Drawing</span>
+              <span class="text-xs text-gray-500 {isDrawing ? 'text-blue-600' : ''}">
+                {isDrawing ? 'Active' : 'Inactive'}
               </span>
             </div>
             
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid gap-3 grid-cols-2">
               <button
-                class="py-2 px-3 rounded font-bold transition-all border {isDrawing ? 'bg-amber-600/30 border-amber-500 text-amber-300 hover:bg-amber-600/40' : 'bg-emerald-600/20 border-emerald-500/50 text-emerald-400 hover:bg-emerald-600/30'}"
+                class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 {isDrawing ? 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50' : 'bg-blue-600 text-white hover:bg-blue-700'}"
                 on:click={toggleDrawing}
               >
-                {isDrawing ? 'Stop Drawing' : 'Start Drawing'}
+                {isDrawing ? 'Stop' : 'Start'}
               </button>
               <button
-                class="py-2 px-3 rounded font-bold bg-slate-800 hover:bg-slate-700 transition-colors border border-slate-700 text-slate-300 disabled:opacity-50"
+                class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
                 disabled={polygonPoints.length === 0}
                 on:click={handleUndo}
               >
-                Undo Point
+                Undo
               </button>
             </div>
             
-            <div class="flex justify-between items-center text-[10px] text-slate-400 mt-1 border-t border-slate-800 pt-2">
-              <span>Points: <b>{polygonPoints.length}</b></span>
-              <span>Area: <b>{area.toFixed(1)} m²</b></span>
+            <div class="flex items-center justify-between gap-3 border-t border-gray-200 pt-3 text-xs text-gray-500">
+              <span>Points: <b class="text-gray-700 font-semibold">{polygonPoints.length}</b></span>
+              <span>Area: <b class="text-gray-700 font-semibold">{area.toFixed(1)} m²</b></span>
               <button
-                class="text-red-400 hover:text-red-300 font-semibold disabled:opacity-50"
+                class="text-gray-700 hover:text-red-500 font-medium disabled:opacity-50"
                 disabled={polygonPoints.length === 0}
                 on:click={handleClear}
               >
-                Clear Polygon
+                Clear
               </button>
             </div>
           </div>
@@ -476,100 +473,88 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find(k => COLLEGES
           <!-- BUILDING FORM DETAILS -->
           <div class="flex flex-col gap-3">
             <!-- ID Field (Auto generated) -->
-            <div class="flex flex-col gap-1">
-              <label for="building-id" class="text-slate-400 font-semibold">Building ID (Hex)</label>
-              <input
-                id="building-id"
-                type="text"
-                class="bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 focus:border-emerald-500 focus:outline-none font-mono text-emerald-400 font-bold"
-                bind:value={id}
-              />
-            </div>
+            <label for="building-id" class="text-xs text-gray-500 font-medium">Building ID (Hex)</label>
+            <input
+              id="building-id"
+              type="text"
+              class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none font-semibold text-blue-600"
+              bind:value={id}
+            />
 
             <!-- Name -->
-            <div class="flex flex-col gap-1">
-              <label for="building-name" class="text-slate-400 font-semibold">Building Name</label>
-              <input
-                id="building-name"
-                type="text"
-                class="bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 focus:border-emerald-500 focus:outline-none text-slate-100"
-                placeholder="e.g. CAS Annex 3"
-                bind:value={name}
-              />
-            </div>
+            <label for="building-name" class="text-xs text-gray-500 font-medium">Building Name</label>
+            <input
+              id="building-name"
+              type="text"
+              class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none text-gray-900"
+              placeholder="e.g. CAS Annex 3"
+              bind:value={name}
+            />
 
             <!-- Type -->
-            <div class="flex flex-col gap-1">
-              <label for="building-type" class="text-slate-400 font-semibold">Building Type</label>
-              <select
-                id="building-type"
-                class="bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 focus:border-emerald-500 focus:outline-none cursor-pointer text-slate-100 font-sans"
-                bind:value={type}
-              >
-                {#each Object.values(TYPES) as t}
-                  <option value={t} class="bg-slate-900 text-slate-100">{t}</option>
-                {/each}
-              </select>
-            </div>
+            <label for="building-type" class="text-xs text-gray-500 font-medium">Building Type</label>
+            <select
+              id="building-type"
+              class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer text-gray-900"
+              bind:value={type}
+            >
+              {#each Object.values(TYPES) as t}
+                <option value={t} class="bg-white text-gray-900">{t}</option>
+              {/each}
+            </select>
 
             <!-- College (Conditionally Shown) -->
             {#if type === TYPES.ACADEMIC}
-              <div class="flex flex-col gap-1">
-                <label for="building-college" class="text-slate-400 font-semibold">College / Department</label>
-                <select
-                  id="building-college"
-                  class="bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 focus:border-emerald-500 focus:outline-none cursor-pointer text-slate-100 font-sans"
-                  bind:value={college}
-                >
-                  {#each Object.values(COLLEGES) as c}
-                    <option value={c} class="bg-slate-900 text-slate-100">{c}</option>
-                  {/each}
-                </select>
-              </div>
+              <label for="building-college" class="text-xs text-gray-500 font-medium">College / Department</label>
+              <select
+                id="building-college"
+                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer text-gray-900"
+                bind:value={college}
+              >
+                {#each Object.values(COLLEGES) as c}
+                  <option value={c} class="bg-white text-gray-900">{c}</option>
+                {/each}
+              </select>
             {/if}
 
             <!-- Alternate Names -->
-            <div class="flex flex-col gap-1">
-              <label for="building-alts" class="text-slate-400 font-semibold">Alternate Names (Comma-separated)</label>
-              <input
-                id="building-alts"
-                type="text"
-                class="bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 focus:border-emerald-500 focus:outline-none text-slate-100"
-                placeholder="e.g. CAS A3, Annex Three"
-                bind:value={alternateNamesStr}
-              />
-            </div>
+            <label for="building-alts" class="text-xs text-gray-500 font-medium">Alternate Names (Comma-separated)</label>
+            <input
+              id="building-alts"
+              type="text"
+              class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none text-gray-900"
+              placeholder="e.g. CAS A3, Annex Three"
+              bind:value={alternateNamesStr}
+            />
 
             <!-- Address -->
-            <div class="flex flex-col gap-1">
-              <label for="building-address" class="text-slate-400 font-semibold">Street Address</label>
-              <input
-                id="building-address"
-                type="text"
-                class="bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 focus:border-emerald-500 focus:outline-none text-slate-100"
-                placeholder="e.g. Pedro R Sandoval Ave"
-                bind:value={address}
-              />
-            </div>
+            <label for="building-address" class="text-xs text-gray-500 font-medium">Street Address</label>
+            <input
+              id="building-address"
+              type="text"
+              class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none text-gray-900"
+              placeholder="e.g. Pedro R Sandoval Ave"
+              bind:value={address}
+            />
 
             <!-- Calculated Centroid -->
-            <div class="bg-slate-900/40 border border-slate-800/60 rounded p-2.5 text-[11px] font-mono flex justify-between items-center mt-1">
-              <span class="text-slate-500 font-semibold">Centroid Lat/Lng:</span>
-              <span class="text-slate-300 font-bold">{centroid[0]}, {centroid[1]}</span>
+            <div class="bg-white border border-gray-200 rounded-xl p-4 transition-all duration-200 hover:bg-gray-50 hover:shadow-lg flex items-center justify-between gap-3">
+              <span class="text-xs text-gray-500 font-medium">Centroid Lat/Lng</span>
+              <span class="text-sm text-gray-700 font-semibold">{centroid[0]}, {centroid[1]}</span>
             </div>
           </div>
 
           <!-- Bottom Action Buttons -->
-          <div class="flex gap-2 mt-2 pt-2 border-t border-slate-800">
+          <div class="grid gap-3 grid-cols-2">
             <button
-              class="flex-1 py-2 px-3 rounded font-bold bg-indigo-600 hover:bg-indigo-500 transition-colors border border-indigo-500 text-white disabled:opacity-50"
+              class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-700 disabled:opacity-50"
               disabled={polygonPoints.length < 3}
               on:click={saveDraft}
             >
               {saveStatus}
             </button>
             <button
-              class="flex-1 py-2 px-3 rounded font-bold bg-emerald-600 hover:bg-emerald-500 transition-colors border border-emerald-500 text-slate-950"
+              class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200"
               on:click={copyCode}
             >
               {copyStatus}
@@ -579,44 +564,44 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find(k => COLLEGES
         {:else}
           <!-- VIEW CODE TAB -->
           {#if activeTab === 'code'}
-            <div class="flex flex-col gap-3 h-full">
-              <div class="flex justify-between items-center">
-                <span class="text-slate-400 font-semibold">Generated TS Code Object</span>
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-sm text-gray-700 font-semibold">Generated TS Code</span>
                 <button
-                  class="px-2 py-1 bg-slate-800 hover:bg-slate-700 transition-all rounded text-[10px] text-emerald-400 font-bold border border-slate-700"
+                  class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200"
                   on:click={copyCode}
                 >
                   {copyStatus}
                 </button>
               </div>
-              <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 font-mono text-[10px] overflow-auto select-text select-all whitespace-pre max-h-[40vh] text-emerald-300/90 leading-relaxed tab-size-2">
+              <div class="bg-white border border-gray-200 rounded-xl p-4 text-xs text-gray-700 overflow-auto whitespace-pre max-h-96 leading-relaxed">
                 {codeBlock}
               </div>
-              <div class="text-[10px] text-slate-400 leading-normal bg-slate-900/40 p-2.5 rounded border border-slate-800/50">
-                💡 <b>How to use:</b> Add points on the map, edit metadata, then copy this block and insert it inside the <code>buildings</code> array in <code>src/data/buildings.ts</code>.
+              <div class="text-xs text-gray-500 leading-normal bg-blue-50 border border-blue-300 rounded-xl p-4">
+                <b class="text-blue-600 font-semibold">How to use:</b> Add points on the map, edit metadata, then copy this block and insert it inside the <code class="text-gray-700">buildings</code> array in <code class="text-gray-700">src/data/buildings.ts</code>.
               </div>
             </div>
 
           <!-- DRAFTS TAB -->
           {:else if activeTab === 'drafts'}
-            <div class="flex flex-col gap-3 h-full">
+            <div class="flex flex-col gap-3">
               {#if drafts.length === 0}
-                <div class="text-center py-8 text-slate-500">
-                  No buildings drafted yet.
-                  <p class="text-[10px] mt-1">Complete a polygon and click "Save Draft" to add them to this session list.</p>
+                <div class="bg-white border border-gray-200 rounded-xl p-4 flex flex-col gap-3 text-center">
+                  <span class="text-sm text-gray-700">No buildings drafted yet.</span>
+                  <span class="text-xs text-gray-500">Complete a polygon and click "Save Draft" to add them to this session list.</span>
                 </div>
               {:else}
-                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                  <span class="text-slate-400 font-semibold">Session Drafts ({drafts.length})</span>
-                  <div class="flex gap-2">
+                <div class="flex items-center justify-between gap-3 border-b border-gray-200 pb-3">
+                  <span class="text-sm text-gray-700 font-semibold">Session Drafts ({drafts.length})</span>
+                  <div class="flex items-center justify-between gap-3">
                     <button
-                      class="px-2 py-1 bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/40 transition-colors rounded text-[10px] font-bold"
+                      class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-700"
                       on:click={copyAllDraftsCode}
                     >
                       Copy All ({drafts.length})
                     </button>
                     <button
-                      class="px-2 py-1 bg-red-600/20 text-red-400 border border-red-500/20 hover:bg-red-600/30 transition-colors rounded text-[10px] font-bold"
+                      class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 hover:text-red-500"
                       on:click={clearAllDrafts}
                     >
                       Clear All
@@ -624,32 +609,33 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find(k => COLLEGES
                   </div>
                 </div>
                 
-                <div class="flex flex-col gap-2 overflow-y-auto max-h-[35vh] pr-1">
+                <div class="flex flex-col divide-y divide-gray-200">
                   {#each drafts as draft, index}
-                    <div class="bg-slate-900 border border-slate-800 rounded p-2.5 flex flex-col gap-1.5 relative group hover:border-slate-700 transition-colors">
-                      <div class="flex justify-between items-start">
-                        <div>
-                          <span class="font-bold text-slate-200">{draft.name}</span>
-                          <span class="text-[10px] font-mono bg-slate-800 text-slate-400 px-1 rounded ml-1.5">{draft.id}</span>
+                    <div class="flex items-center justify-between gap-3 p-4 hover:bg-gray-50 transition-colors duration-200">
+                      <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-3">
+                          <span class="text-sm text-gray-700 font-semibold">{draft.name}</span>
+                          <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-blue-50 border border-blue-300 text-blue-600">{draft.id}</span>
                         </div>
-                        <button
-                          class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-[9px] font-semibold text-emerald-400 transition-colors"
-                          on:click={() => navigator.clipboard.writeText(draft.code)}
-                        >
-                          Copy
-                        </button>
+                        <div class="grid grid-cols-2 gap-3 text-xs text-gray-500">
+                          <div>Type: <span class="text-gray-700 font-medium">{draft.type}</span></div>
+                          <div>Vertices: <span class="text-gray-700 font-medium">{draft.polygon.length}</span></div>
+                          <div class="col-span-2 truncate">Address: <span class="text-gray-700 font-medium">{draft.address}</span></div>
+                        </div>
                       </div>
-                      <div class="grid grid-cols-2 gap-x-2 text-[10px] text-slate-400 leading-normal">
-                        <div>Type: <span class="text-slate-300">{draft.type}</span></div>
-                        <div>Vertices: <span class="text-slate-300">{draft.polygon.length}</span></div>
-                        <div class="col-span-2 truncate">Address: <span class="text-slate-300">{draft.address}</span></div>
-                      </div>
+                      <button
+                        class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-200 text-blue-600 text-xs font-medium"
+                        on:click={() => navigator.clipboard.writeText(draft.code)}
+                        title="Copy"
+                      >
+                        Copy
+                      </button>
                     </div>
                   {/each}
                 </div>
                 
-                <div class="text-[10px] text-slate-400 leading-normal bg-indigo-950/20 p-2.5 rounded border border-indigo-900/30">
-                  ℹ️ Previews of these drafted buildings are drawn on the map as dashed indigo polygon overlays so you can review their sizes and alignments relative to other structures.
+                <div class="text-xs text-gray-500 leading-normal bg-blue-50 border border-blue-300 rounded-xl p-4">
+                  Previews of these drafted buildings are drawn on the map as dashed blue polygon overlays so you can review their sizes and alignments relative to other structures.
                 </div>
               {/if}
             </div>
@@ -674,9 +660,5 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find(k => COLLEGES
   :global(.custom-draft-icon) {
     background: transparent !important;
     border: none !important;
-  }
-  .tab-size-2 {
-    tab-size: 2;
-    -moz-tab-size: 2;
   }
 </style>
