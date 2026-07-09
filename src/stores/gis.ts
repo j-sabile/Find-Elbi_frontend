@@ -75,6 +75,12 @@ function createGisStore() {
         const points = [...s.measurementPoints, pt];
         return { ...s, measurementPoints: points };
       }),
+    setMeasurementPoints: (points: [number, number][]) => update((s) => ({ ...s, measurementPoints: points })),
+    undoMeasurementPoint: () =>
+      update((s) => {
+        const points = s.measurementPoints.slice(0, -1);
+        return { ...s, measurementPoints: points, measurementResult: {} };
+      }),
     setMeasurementResult: (res: { distance?: number; area?: number }) => update((s) => ({ ...s, measurementResult: res })),
     clearMeasurements: () => update((s) => ({ ...s, measurementPoints: [], measurementResult: {} })),
     reset: () => set({ ...defaultState }),

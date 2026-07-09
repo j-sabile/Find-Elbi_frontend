@@ -1,6 +1,10 @@
 <script lang="ts">
   import { gisStore } from "../stores/gis";
   import type { BasemapType } from "../stores/gis";
+  import { createEventDispatcher } from "svelte";
+  import ToolPanelV2 from "./ToolPanelV2.svelte";
+
+  const dispatch = createEventDispatcher();
 
   type BasemapMeta = {
     id: BasemapType;
@@ -32,13 +36,10 @@
   ];
 </script>
 
-<div class="bg-white border border-gray-200 rounded-2xl shadow-lg w-80 p-4 flex flex-col gap-4">
-  <div class="flex flex-col gap-3">
-    <span class="text-lg font-semibold tracking-tight text-gray-900">Basemaps</span>
-    <span class="text-sm text-gray-500">Select a base layer for the map</span>
-  </div>
+<ToolPanelV2 title="Basemaps" closeOnOutside on:close={() => dispatch("close")}>
+  <span class="text-sm text-gray-500">Select a base layer for the map</span>
 
-  <div class="grid grid-cols-1 gap-3">
+  <div class="grid grid-cols-1 gap-3 w-80">
     {#each basemaps as basemap}
       <button
         class="flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 hover:bg-gray-50 text-left w-full {$gisStore.activeBasemap === basemap.id
@@ -57,4 +58,4 @@
       </button>
     {/each}
   </div>
-</div>
+</ToolPanelV2>

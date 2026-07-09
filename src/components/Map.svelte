@@ -325,44 +325,58 @@
   }
 
   // ─── GIS Tool: Measurement ───────────────────────────────────────────────────
+  // Map clicks only append to the store; visuals are reconciled reactively so that
+  // Undo/Clear (driven from the panel) also update the map.
   function addMeasurementPoint(lat: number, lng: number) {
     if (!$elbiMap) return;
     gisStore.addMeasurementPoint([lat, lng]);
+  }
+
+  // Rebuild all measurement overlays from the current store state.
+  function reconcileMeasurements() {
+    if (!$elbiMap) return;
+    // Clear existing overlays
+    if (measureLine) {
+      measureLine.removeFrom($elbiMap);
+      measureLine = undefined;
+    }
+    if (measurePolygon) {
+      measurePolygon.removeFrom($elbiMap);
+      measurePolygon = undefined;
+    }
+    measureNodes.forEach((n) => n.removeFrom($elbiMap));
+    measureNodes = [];
 
     const points = $gisStore.measurementPoints;
+    if (points.length === 0) {
+      setResultIfChanged({});
+      return;
+    }
 
-    // Draw node
-    const node = L.circleMarker([lat, lng], {
-      radius: 5,
-      color: "#10b981",
-      fillColor: "#6ee7b7",
-      fillOpacity: 1,
-      weight: 2,
-    }).addTo($elbiMap);
-    measureNodes.push(node);
+    // Draw a node for every stored point
+    measureNodes = points.map((pt) =>
+      L.circleMarker(pt, {
+        radius: 5,
+        color: "#10b981",
+        fillColor: "#6ee7b7",
+        fillOpacity: 1,
+        weight: 2,
+      }).addTo($elbiMap),
+    );
 
     if ($gisStore.gisTool === "measure_dist" && points.length >= 2) {
-      // Update polyline
-      if (measureLine) measureLine.removeFrom($elbiMap);
       measureLine = L.polyline(points, {
         color: "#10b981",
         weight: 2,
         dashArray: "6 4",
       }).addTo($elbiMap);
 
-      // Compute total geodesic path length
       let totalDist = 0;
       for (let i = 0; i < points.length - 1; i++) {
         totalDist += getHaversineDistance(points[i], points[i + 1]);
       }
-      gisStore.setMeasurementResult({ distance: totalDist });
+      setResultIfChanged({ distance: totalDist });
     } else if ($gisStore.gisTool === "measure_area" && points.length >= 3) {
-      // Update filled polygon
-      if (measurePolygon) measurePolygon.removeFrom($elbiMap);
-      if (measureLine) {
-        measureLine.removeFrom($elbiMap);
-        measureLine = undefined;
-      }
       measurePolygon = L.polygon(points, {
         color: "#10b981",
         fillColor: "#10b981",
@@ -373,8 +387,18 @@
 
       const area = calculatePolygonArea(points);
       const perimeter = calculatePolygonPerimeter(points);
-      gisStore.setMeasurementResult({ area, distance: perimeter });
+      setResultIfChanged({ area, distance: perimeter });
+    } else {
+      setResultIfChanged({});
     }
+  }
+
+  // Only write to the store when the computed result actually differs, to avoid
+  // triggering the reactive reconciliation block in an infinite loop.
+  function setResultIfChanged(next: { distance?: number; area?: number }) {
+    const cur = $gisStore.measurementResult;
+    const same = (cur.distance ?? undefined) === (next.distance ?? undefined) && (cur.area ?? undefined) === (next.area ?? undefined);
+    if (!same) gisStore.setMeasurementResult(next);
   }
 
   function clearMeasurements() {
@@ -454,6 +478,12 @@
         _prevTool = gisTool;
       }
     }
+  }
+
+  // Reconcile measurement overlays whenever the stored points or active tool change
+  // (covers map clicks, Undo, Clear, and mode switches from the panel).
+  $: if ($elbiMap && ($gisStore.gisTool === "measure_dist" || $gisStore.gisTool === "measure_area")) {
+    reconcileMeasurements();
   }
 </script>
 
