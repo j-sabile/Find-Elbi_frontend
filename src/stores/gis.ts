@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 import type { IBuilding } from "../interfaces/IBuilding";
 
-export type GisToolType = "none" | "buffer" | "nearest" | "measure_dist" | "measure_area";
+export type GisToolType = "none" | "buffer" | "nearest" | "measure_dist" | "measure_area" | "draw_building";
 export type BasemapType = "street" | "osm" | "satellite";
 
 export interface IGisState {
@@ -19,6 +19,7 @@ export interface IGisState {
   nearestResult: { building: IBuilding; distance: number; walkingTimeMin: number } | null;
   measurementPoints: [number, number][];
   measurementResult: { distance?: number; area?: number };
+  buildingPoints: [number, number][];
 }
 
 const defaultState: IGisState = {
@@ -36,6 +37,7 @@ const defaultState: IGisState = {
   nearestResult: null,
   measurementPoints: [],
   measurementResult: {},
+  buildingPoints: [],
 };
 
 function createGisStore() {
@@ -57,6 +59,7 @@ function createGisStore() {
           nearestResult: null,
           measurementPoints: [],
           measurementResult: {},
+          buildingPoints: [],
         };
       }),
     setMouseLatLng: (coords: { lat: number; lng: number } | null) => update((s) => ({ ...s, mouseLatLng: coords })),
@@ -83,6 +86,10 @@ function createGisStore() {
       }),
     setMeasurementResult: (res: { distance?: number; area?: number }) => update((s) => ({ ...s, measurementResult: res })),
     clearMeasurements: () => update((s) => ({ ...s, measurementPoints: [], measurementResult: {} })),
+    addBuildingPoint: (pt: [number, number]) => update((s) => ({ ...s, buildingPoints: [...s.buildingPoints, pt] })),
+    undoBuildingPoint: () => update((s) => ({ ...s, buildingPoints: s.buildingPoints.slice(0, -1) })),
+    setBuildingPoints: (points: [number, number][]) => update((s) => ({ ...s, buildingPoints: points })),
+    clearBuildingPoints: () => update((s) => ({ ...s, buildingPoints: [] })),
     reset: () => set({ ...defaultState }),
   };
 }

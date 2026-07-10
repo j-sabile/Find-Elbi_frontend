@@ -6,7 +6,7 @@
   import BuildingInfoCardV2 from "./components/BuildingInfoCardV2.svelte";
   import GisSidebar from "./components/GisSidebar.svelte";
   import GisCoordWidget from "./components/GisCoordWidget.svelte";
-  import AddBuildingTool from "./components/AddBuildingTool.svelte";
+  import AddBuildingToolV2 from "./components/AddBuildingToolV2.svelte";
   import MapToolbarV2 from "./components/MapToolbarV2.svelte";
   import { mapStatus } from "./stores/mapStatus";
 </script>
@@ -22,7 +22,7 @@
   <!-- <BottomPanel /> -->
   <!-- <GisSidebar /> -->
   <!-- <GisCoordWidget /> -->
-  <!-- <AddBuildingTool /> -->
+  <!-- <AddBuildingToolV2 /> -->
 </div>
 
 <style>

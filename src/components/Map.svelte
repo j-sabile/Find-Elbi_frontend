@@ -48,6 +48,11 @@
   let measurePolygon: Polygon | undefined;
   let measureNodes: CircleMarker[] = [];
 
+  // ─── Add Building overlay ───────────────────────────────────────────────────
+  let buildingPolygon: Polygon | undefined;
+  let buildingCentroid: CircleMarker | undefined;
+  let buildingNodes: CircleMarker[] = [];
+
   // ─── Campus boundary polygon (rough bounding area of UPLB) ──────────────────
   const CAMPUS_BOUNDARY: [number, number][] = [
     [14.1649, 121.2371],
@@ -421,6 +426,64 @@
     if (tool === "buffer") runBufferQuery(lat, lng);
     else if (tool === "nearest") runNearestFacility(lat, lng);
     else if (tool === "measure_dist" || tool === "measure_area") addMeasurementPoint(lat, lng);
+    else if (tool === "draw_building") gisStore.addBuildingPoint([lat, lng]);
+  }
+
+  // ── Add Building reconciliation ─────────────────────────────────────────────
+  function clearBuildingOverlays() {
+    if (buildingPolygon) {
+      buildingPolygon.removeFrom($elbiMap);
+      buildingPolygon = undefined;
+    }
+    if (buildingCentroid) {
+      buildingCentroid.removeFrom($elbiMap);
+      buildingCentroid = undefined;
+    }
+    buildingNodes.forEach((n) => n.removeFrom($elbiMap));
+    buildingNodes = [];
+  }
+
+  function reconcileBuilding() {
+    if (!$elbiMap) return;
+    clearBuildingOverlays();
+
+    const pts = $gisStore.buildingPoints;
+    if (pts.length === 0) return;
+
+    buildingNodes = pts.map((pt, idx) =>
+      L.circleMarker(pt, {
+        radius: 5,
+        color: "#2563eb",
+        fillColor: "#bfdbfe",
+        fillOpacity: 1,
+        weight: 2,
+      })
+        .bindTooltip(`Vertex ${idx + 1}`, { direction: "top" })
+        .addTo($elbiMap),
+    );
+
+    if (pts.length >= 2) {
+      buildingPolygon = L.polygon(pts, {
+        color: "#2563eb",
+        fillColor: "#2563eb",
+        fillOpacity: 0.15,
+        weight: 3,
+      }).addTo($elbiMap);
+    }
+
+    if (pts.length > 0) {
+      const lat = pts.reduce((a, p) => a + p[0], 0) / pts.length;
+      const lng = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+      buildingCentroid = L.circleMarker([lat, lng], {
+        radius: 5,
+        color: "#2563eb",
+        fillColor: "#eff6ff",
+        fillOpacity: 1,
+        weight: 2,
+      })
+        .bindTooltip("Calculated Centroid", { direction: "top" })
+        .addTo($elbiMap);
+    }
   }
 
   // ─── Reactive subscriptions: respond to store changes ─────────────────────────
@@ -470,6 +533,10 @@
           clearMeasurements();
           gisStore.clearMeasurements();
         }
+        if (_prevTool === "draw_building") {
+          clearBuildingOverlays();
+          gisStore.clearBuildingPoints();
+        }
 
         // Cursor style
         const container = $elbiMap.getContainer();
@@ -484,6 +551,11 @@
   // (covers map clicks, Undo, Clear, and mode switches from the panel).
   $: if ($elbiMap && ($gisStore.gisTool === "measure_dist" || $gisStore.gisTool === "measure_area")) {
     reconcileMeasurements();
+  }
+
+  // Reconcile building-drawing overlays whenever points or active tool change.
+  $: if ($elbiMap && $gisStore.gisTool === "draw_building") {
+    reconcileBuilding();
   }
 </script>
 
