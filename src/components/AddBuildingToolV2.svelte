@@ -3,7 +3,7 @@
   import L from "leaflet";
   import { gisStoreV2 } from "../stores/gisV2";
   import { dataStoreV2 } from "../stores/dataV2";
-  import { mapStoreV2 } from "../stores/mapV2";
+  import { mapInstance } from "../stores/mapV2";
   import { TYPES, COLLEGES } from "../data/constants";
   import { calculatePolygonArea, calculatePolygonPerimeter } from "../utils/gisConvert";
 
@@ -37,14 +37,14 @@
   // Initialize
   onMount(() => {
     id = getNextId();
-    if ($mapStoreV2.map) {
-      draftLayers = L.featureGroup().addTo($mapStoreV2.map);
+    if ($mapInstance) {
+      draftLayers = L.featureGroup().addTo($mapInstance);
     }
   });
 
   onDestroy(() => {
-    if (draftLayers && $mapStoreV2.map) {
-      draftLayers.removeFrom($mapStoreV2.map);
+    if (draftLayers && $mapInstance) {
+      draftLayers.removeFrom($mapInstance);
     }
   });
 
@@ -165,7 +165,7 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find((k) => COLLEG
     drafts = [...drafts, draft];
 
     // Add to preview layers on map
-    if ($mapStoreV2.map && draftLayers) {
+    if ($mapInstance && draftLayers) {
       const pLayer = L.polygon(draft.polygon, {
         color: "#2563eb", // blue-600
         fillColor: "#2563eb",

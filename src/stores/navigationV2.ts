@@ -5,7 +5,7 @@ import type { IFloor } from "../interfaces/IFloor";
 import type { IRoom } from "../interfaces/IRoom";
 import type { ISearchResult } from "../interfaces/ISearchResult";
 import { dataStoreV2 } from "./dataV2";
-import { mapStoreV2 } from "./mapV2";
+import { mapInstance } from "./mapV2";
 import L from "leaflet";
 import { searchV2 } from "../utils/searchV2";
 
@@ -213,7 +213,7 @@ let lastSelectedBuildingId: string | null = null;
 let lastSelectedFloorLevel: string | null = null;
 // let lastStatus: STACKSTATUS | null = null;
 
-derived([navigationStoreV2, mapStoreV2], ([$nav, $mapState]) => ({ nav: $nav, map: $mapState.map })).subscribe(({ nav, map }) => {
+derived([navigationStoreV2, mapInstance], ([$nav, $mapInstance]) => ({ nav: $nav, map: $mapInstance })).subscribe(({ nav, map }) => {
   if (!map) return;
 
   clearMapDrawings(map);

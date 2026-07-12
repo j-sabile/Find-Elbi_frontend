@@ -1,40 +1,62 @@
 <script lang="ts">
   export let classes = "";
-  import { elbiMap } from "../stores/map";
   import { gisStoreV2 } from "../stores/gisV2";
-  import { mapStoreV2 } from "../stores/mapV2";
-  import type { BasemapType } from "../stores/mapV2";
+  import { mapInstance, mapSettings } from "../stores/mapV2";
   import L, { type TileLayer, type CircleMarker, type Polyline, type Polygon, type Circle } from "leaflet";
   import buildings from "../data/buildings";
   import { getHaversineDistance, calculatePolygonArea, calculatePolygonPerimeter } from "../utils/gisConvert";
+  import { CAMPUS_BOUNDARY } from "../data/constants";
 
-  // ─── Tile layer references ──────────────────────────────────────────────────
-  const TILE_URLS: Record<BasemapType, { url: string; options: any }> = {
-    street: {
-      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-      options: {
-        attribution: "Tiles &copy; Esri — Source: Esri, HERE, Garmin, USGS, NGA, EPA, USDA, NPS",
-        maxZoom: 22,
+  // ─── Basemap management ──────────────────────────────────────────────────────
+  let currentBasemap: TileLayer | undefined;
+  $: {
+    if ($mapInstance && $mapSettings.activeBasemap !== currentBasemap) {
+      if (currentBasemap) $mapInstance.removeLayer(currentBasemap);
+      currentBasemap = $mapSettings.activeBasemap;
+      currentBasemap.addTo($mapInstance);
+    }
+  }
+
+  // ─── Map initialization ──────────────────────────────────────────────────────
+  function createMap(container: HTMLElement) {
+    const map = L.map(container, {
+      zoomControl: false,
+      preferCanvas: true,
+      maxZoom: 19,
+      minZoom: 13,
+    }).setView([14.163, 121.24], 17);
+    mapInstance.set(map);
+
+    L.polyline(CAMPUS_BOUNDARY, { color: "#ef4444", weight: 2, dashArray: "8 6", opacity: 0.8 }).bindTooltip("UPLB Campus Boundary", { sticky: true, opacity: 0.8 }).addTo(map);
+    L.control.scale({ position: "topright", metric: true, imperial: false }).addTo(map);
+    L.control.zoom({ position: "topleft" }).addTo(map);
+
+    $mapSettings.activeBasemap.addTo(map);
+    map.on("click", (e: L.LeafletMouseEvent) => handleMapClick(e.latlng.lat, e.latlng.lng));
+
+    // DISABLED: To be enabled once UI for mouse coordinates is implemented
+    // map.on("mousemove", (e: L.LeafletMouseEvent) => mouseLatLng.set({ lat: e.latlng.lat, lng: e.latlng.lng }));
+    // map.on("mouseout", () => mouseLatLng.set(null));
+
+    return {
+      destroy() {
+        map.off(); // Remove leaflet event listeners
+        map.remove(); // Destroy the Leaflet instance safely
+        mapInstance.set(null); // Clear the Svelte store
       },
-    },
-    osm: {
-      url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-      options: {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 22,
-      },
-    },
-    satellite: {
-      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      options: {
-        attribution: "Tiles &copy; Esri",
-        maxZoom: 22,
-      },
-    },
-  };
+    };
+  }
+
+  // ─── Unified Map Click Handler ────────────────────────────────────────────────
+  function handleMapClick(lat: number, lng: number) {
+    const tool = $gisStoreV2.activeTool;
+    if (tool === "buffer") runBufferQuery(lat, lng);
+    else if (tool === "nearest") runNearestFacility(lat, lng);
+    else if (tool === "measure_dist" || tool === "measure_area") addMeasurementPoint(lat, lng);
+    else if (tool === "draw_building") gisStoreV2.addPoint([lat, lng]);
+  }
 
   // ─── Overlay layer collections ───────────────────────────────────────────────
-  let tileLayer: TileLayer | undefined;
   let centroidMarkers: CircleMarker[] = [];
   let boundaryPolyline: Polyline | undefined;
   let gridLines: Polyline[] = [];
@@ -52,74 +74,11 @@
   let buildingCentroid: CircleMarker | undefined;
   let buildingNodes: CircleMarker[] = [];
 
-  // ─── Campus boundary polygon (rough bounding area of UPLB) ──────────────────
-  const CAMPUS_BOUNDARY: [number, number][] = [
-    [14.1649, 121.2371],
-    [14.1679, 121.239],
-    [14.1679, 121.2435],
-    [14.1658, 121.2468],
-    [14.1635, 121.248],
-    [14.1601, 121.2478],
-    [14.1572, 121.2462],
-    [14.1558, 121.243],
-    [14.1565, 121.2395],
-    [14.1589, 121.2371],
-    [14.162, 121.236],
-    [14.1649, 121.2371],
-  ];
-
-  // ─── Map initialization ──────────────────────────────────────────────────────
-  function createMap(container: HTMLElement) {
-    elbiMap.set(
-      L.map(container, {
-        zoomControl: false,
-        preferCanvas: true,
-        maxZoom: 19,
-        minZoom: 13,
-      }).setView([14.163, 121.24], 17),
-    );
-
-    // Add custom zoom control in top-left
-    // L.control.zoom({ position: "topleft" }).addTo($elbiMap);
-
-    // Load initial tile layer
-    applyBasemap($mapStoreV2.activeBasemap);
-
-    // Mouse move → track coordinates
-    $elbiMap.on("mousemove", (e: L.LeafletMouseEvent) => {
-      mapStoreV2.setMouseLatLng({ lat: e.latlng.lat, lng: e.latlng.lng });
-    });
-
-    $elbiMap.on("mouseout", () => {
-      mapStoreV2.setMouseLatLng(null);
-    });
-
-    // Map click → delegate to active GIS tool
-    $elbiMap.on("click", (e: L.LeafletMouseEvent) => {
-      handleMapClick(e.latlng.lat, e.latlng.lng);
-    });
-
-    // Redraw grid on zoom/move
-    // $elbiMap.on("moveend", () => {
-    //   if ($mapStoreV2.showGrid) drawGrid();
-    // });
-  }
-
-  // ─── Basemap management ──────────────────────────────────────────────────────
-  function applyBasemap(basemap: BasemapType) {
-    if (!$elbiMap) return;
-    if (tileLayer) {
-      $elbiMap.removeLayer(tileLayer);
-      tileLayer = undefined;
-    }
-    const { url, options } = TILE_URLS[basemap];
-    tileLayer = L.tileLayer(url, options).addTo($elbiMap);
-  }
-
   // ─── Overlay: Building Centroids ─────────────────────────────────────────────
   function drawCentroids() {
-    if (!$elbiMap) return;
-    centroidMarkers.forEach((m) => m.removeFrom($elbiMap));
+    const map = $mapInstance; // lock the value into const variable, $mapInstance is a mutable variable and can change between reactive updates
+    if (map == null) return;
+    centroidMarkers.forEach((m) => m.removeFrom(map));
     centroidMarkers = [];
     buildings.forEach((building) => {
       const lats = building.polygon.map((p) => p[0]);
@@ -134,42 +93,23 @@
         weight: 1,
       })
         .bindTooltip(`${building.name} (centroid)`, { direction: "top", opacity: 0.85 })
-        .addTo($elbiMap);
+        .addTo(map);
       centroidMarkers.push(m);
     });
   }
 
   function removeCentroids() {
-    if (!$elbiMap) return;
-    centroidMarkers.forEach((m) => m.removeFrom($elbiMap));
+    const map = $mapInstance; // lock the value into const variable, $mapInstance is a mutable variable and can change between reactive updates
+    if (map == null) return;
+    centroidMarkers.forEach((m) => m.removeFrom(map));
     centroidMarkers = [];
-  }
-
-  // ─── Overlay: Campus Boundary ────────────────────────────────────────────────
-  function drawBoundary() {
-    if (!$elbiMap) return;
-    removeBoundary();
-    boundaryPolyline = L.polyline(CAMPUS_BOUNDARY, {
-      color: "#ef4444",
-      weight: 2,
-      dashArray: "8 6",
-      opacity: 0.8,
-    })
-      .bindTooltip("UPLB Campus Study Boundary", { sticky: true, opacity: 0.8 })
-      .addTo($elbiMap);
-  }
-
-  function removeBoundary() {
-    if (!$elbiMap || !boundaryPolyline) return;
-    boundaryPolyline.removeFrom($elbiMap);
-    boundaryPolyline = undefined;
   }
 
   // ─── Overlay: UTM Grid Lines ─────────────────────────────────────────────────
   function drawGrid() {
-    if (!$elbiMap) return;
+    if (!$mapInstance) return;
     removeGrid();
-    const bounds = $elbiMap.getBounds();
+    const bounds = $mapInstance.getBounds();
     const STEP = 0.001; // ~111m spacing
 
     const minLat = Math.floor(bounds.getSouth() / STEP) * STEP;
@@ -188,7 +128,7 @@
             [lat, maxLng],
           ],
           gridStyle,
-        ).addTo($elbiMap),
+        ).addTo($mapInstance),
       );
     }
     // Vertical lines (constant lng)
@@ -200,20 +140,22 @@
             [maxLat, lng],
           ],
           gridStyle,
-        ).addTo($elbiMap),
+        ).addTo($mapInstance),
       );
     }
   }
 
   function removeGrid() {
-    if (!$elbiMap) return;
-    gridLines.forEach((l) => l.removeFrom($elbiMap));
+    const map = $mapInstance; // lock the value into const variable, $mapInstance is a mutable variable and can change between reactive updates
+    if (map == null) return;
+    gridLines.forEach((l) => l.removeFrom(map));
     gridLines = [];
   }
 
   // ─── GIS Tool: Buffer Query ──────────────────────────────────────────────────
   function runBufferQuery(lat: number, lng: number) {
-    if (!$elbiMap) return;
+    const map = $mapInstance; // lock the value into const variable, $mapInstance is a mutable variable and can change between reactive updates
+    if (map == null) return;
     clearBuffer();
 
     const radius = $gisStoreV2.bufferRadius;
@@ -224,7 +166,7 @@
       fillOpacity: 0.08,
       weight: 2,
       dashArray: "6 4",
-    }).addTo($elbiMap);
+    }).addTo(map);
 
     gisStoreV2.executeBufferQuery([lat, lng]);
 
@@ -244,23 +186,24 @@
         weight: 2,
       })
         .bindTooltip(`${r.building.name} — ${r.distance.toFixed(0)}m`, { direction: "top" })
-        .addTo($elbiMap),
+        .addTo(map),
     );
   }
 
   function clearBuffer() {
-    if (!$elbiMap) return;
+    const map = $mapInstance; // lock the value into const variable, $mapInstance is a mutable variable and can change between reactive updates
+    if (map == null) return;
     if (bufferCircle) {
-      bufferCircle.removeFrom($elbiMap);
+      bufferCircle.removeFrom(map);
       bufferCircle = undefined;
     }
-    bufferMarkers.forEach((m) => m.removeFrom($elbiMap));
+    bufferMarkers.forEach((m) => m.removeFrom(map));
     bufferMarkers = [];
   }
 
   // ─── GIS Tool: Nearest Facility ──────────────────────────────────────────────
   function runNearestFacility(lat: number, lng: number) {
-    if (!$elbiMap) return;
+    if (!$mapInstance) return;
     clearNearest();
 
     gisStoreV2.executeNearestQuery([lat, lng]);
@@ -281,7 +224,7 @@
       weight: 2.5,
     })
       .bindTooltip("Your Location (Origin)", { direction: "top" })
-      .addTo($elbiMap);
+      .addTo($mapInstance);
 
     // Draw destination marker
     const dest = result.building.marker;
@@ -296,7 +239,7 @@
         direction: "top",
         permanent: false,
       })
-      .addTo($elbiMap);
+      .addTo($mapInstance);
 
     // Draw dashed geodesic line connecting origin → nearest facility
     nearestLine = L.polyline([[lat, lng], dest], {
@@ -304,24 +247,24 @@
       weight: 2.5,
       dashArray: "10 6",
       opacity: 0.9,
-    }).addTo($elbiMap);
+    }).addTo($mapInstance);
 
     // Fly the map to fit both points
-    $elbiMap.fitBounds([[lat, lng], dest], { padding: [60, 60], maxZoom: 19 });
+    $mapInstance.fitBounds([[lat, lng], dest], { padding: [60, 60], maxZoom: 19 });
   }
 
   function clearNearest() {
-    if (!$elbiMap) return;
+    if (!$mapInstance) return;
     if (nearestLine) {
-      nearestLine.removeFrom($elbiMap);
+      nearestLine.removeFrom($mapInstance);
       nearestLine = undefined;
     }
     if (nearestOriginMarker) {
-      nearestOriginMarker.removeFrom($elbiMap);
+      nearestOriginMarker.removeFrom($mapInstance);
       nearestOriginMarker = undefined;
     }
     if (nearestDestMarker) {
-      nearestDestMarker.removeFrom($elbiMap);
+      nearestDestMarker.removeFrom($mapInstance);
       nearestDestMarker = undefined;
     }
   }
@@ -330,23 +273,24 @@
   // Map clicks only append to the store; visuals are reconciled reactively so that
   // Undo/Clear (driven from the panel) also update the map.
   function addMeasurementPoint(lat: number, lng: number) {
-    if (!$elbiMap) return;
+    if (!$mapInstance) return;
     gisStoreV2.addPoint([lat, lng]);
   }
 
   // Rebuild all measurement overlays from the current store state.
   function reconcileMeasurements() {
-    if (!$elbiMap) return;
+    const map = $mapInstance; // lock the value into const variable, $mapInstance is a mutable variable and can change between reactive updates
+    if (map == null) return;
     // Clear existing overlays
     if (measureLine) {
-      measureLine.removeFrom($elbiMap);
+      measureLine.removeFrom(map);
       measureLine = undefined;
     }
     if (measurePolygon) {
-      measurePolygon.removeFrom($elbiMap);
+      measurePolygon.removeFrom(map);
       measurePolygon = undefined;
     }
-    measureNodes.forEach((n) => n.removeFrom($elbiMap));
+    measureNodes.forEach((n) => n.removeFrom(map));
     measureNodes = [];
 
     const points = $gisStoreV2.draftPoints;
@@ -363,7 +307,7 @@
         fillColor: "#6ee7b7",
         fillOpacity: 1,
         weight: 2,
-      }).addTo($elbiMap),
+      }).addTo(map),
     );
 
     if ($gisStoreV2.activeTool === "measure_dist" && points.length >= 2) {
@@ -371,7 +315,7 @@
         color: "#10b981",
         weight: 2,
         dashArray: "6 4",
-      }).addTo($elbiMap);
+      }).addTo(map);
 
       let totalDist = 0;
       for (let i = 0; i < points.length - 1; i++) {
@@ -385,7 +329,7 @@
         fillOpacity: 0.1,
         weight: 2,
         dashArray: "6 4",
-      }).addTo($elbiMap);
+      }).addTo(map);
 
       const area = calculatePolygonArea(points);
       const perimeter = calculatePolygonPerimeter(points);
@@ -404,44 +348,41 @@
   }
 
   function clearMeasurements() {
-    if (!$elbiMap) return;
+    const map = $mapInstance; // lock the value into const variable, $mapInstance is a mutable variable and can change between reactive updates
+    if (map == null) return;
     if (measureLine) {
-      measureLine.removeFrom($elbiMap);
+      measureLine.removeFrom(map);
       measureLine = undefined;
     }
     if (measurePolygon) {
-      measurePolygon.removeFrom($elbiMap);
+      measurePolygon.removeFrom(map);
       measurePolygon = undefined;
     }
-    measureNodes.forEach((n) => n.removeFrom($elbiMap));
+    measureNodes.forEach((n) => n.removeFrom(map));
     measureNodes = [];
-  }
-
-  // ─── Unified Map Click Handler ────────────────────────────────────────────────
-  function handleMapClick(lat: number, lng: number) {
-    const tool = $gisStoreV2.activeTool;
-    if (tool === "buffer") runBufferQuery(lat, lng);
-    else if (tool === "nearest") runNearestFacility(lat, lng);
-    else if (tool === "measure_dist" || tool === "measure_area") addMeasurementPoint(lat, lng);
-    else if (tool === "draw_building") gisStoreV2.addPoint([lat, lng]);
   }
 
   // ── Add Building reconciliation ─────────────────────────────────────────────
   function clearBuildingOverlays() {
+    const map = $mapInstance; // lock the value into const variable, $mapInstance is a mutable variable and can change between reactive updates
+    if (map == null) return;
+
     if (buildingPolygon) {
-      buildingPolygon.removeFrom($elbiMap);
+      buildingPolygon.removeFrom(map);
       buildingPolygon = undefined;
     }
     if (buildingCentroid) {
-      buildingCentroid.removeFrom($elbiMap);
+      buildingCentroid.removeFrom(map);
       buildingCentroid = undefined;
     }
-    buildingNodes.forEach((n) => n.removeFrom($elbiMap));
+    buildingNodes.forEach((n) => n.removeFrom(map));
     buildingNodes = [];
   }
 
   function reconcileBuilding() {
-    if (!$elbiMap) return;
+    const map = $mapInstance; // lock the value into const variable, $mapInstance is a mutable variable and can change between reactive updates
+    if (map == null) return;
+
     clearBuildingOverlays();
 
     const pts = $gisStoreV2.draftPoints;
@@ -456,7 +397,7 @@
         weight: 2,
       })
         .bindTooltip(`Vertex ${idx + 1}`, { direction: "top" })
-        .addTo($elbiMap),
+        .addTo(map),
     );
 
     if (pts.length >= 2) {
@@ -465,7 +406,7 @@
         fillColor: "#2563eb",
         fillOpacity: 0.15,
         weight: 3,
-      }).addTo($elbiMap);
+      }).addTo(map);
     }
 
     if (pts.length > 0) {
@@ -479,41 +420,27 @@
         weight: 2,
       })
         .bindTooltip("Calculated Centroid", { direction: "top" })
-        .addTo($elbiMap);
+        .addTo(map);
     }
   }
 
   // ─── Reactive subscriptions: respond to store changes ─────────────────────────
   // Track previous values so mouse moves don't retrigger expensive operations
-  let _prevBasemap: string | undefined;
   let _prevCentroids: boolean | undefined;
   let _prevBoundary: boolean | undefined;
   let _prevGrid: boolean | undefined;
   let _prevTool: string | undefined;
 
   $: {
-    const { activeBasemap, showCentroids, showBoundaries, showGrid } = $mapStoreV2;
+    const { showCentroids, showBoundaries, showGrid } = $mapSettings;
     const gisTool = $gisStoreV2.activeTool;
 
-    if ($elbiMap) {
-      // Basemap — only swap tile layer when basemap selection actually changes
-      if (activeBasemap !== _prevBasemap) {
-        _prevBasemap = activeBasemap;
-        applyBasemap(activeBasemap);
-      }
-
+    if ($mapInstance) {
       // Centroids overlay
       if (showCentroids !== _prevCentroids) {
         _prevCentroids = showCentroids;
         if (showCentroids) drawCentroids();
         else removeCentroids();
-      }
-
-      // Campus boundary overlay
-      if (showBoundaries !== _prevBoundary) {
-        _prevBoundary = showBoundaries;
-        if (showBoundaries) drawBoundary();
-        else removeBoundary();
       }
 
       // UTM Grid overlay
@@ -537,7 +464,7 @@
         }
 
         // Cursor style
-        const container = $elbiMap.getContainer();
+        const container = $mapInstance.getContainer();
         container.style.cursor = gisTool !== "none" ? "crosshair" : "";
 
         _prevTool = gisTool;
@@ -547,12 +474,12 @@
 
   // Reconcile measurement overlays whenever the stored points or active tool change
   // (covers map clicks, Undo, Clear, and mode switches from the panel).
-  $: if ($elbiMap && ($gisStoreV2.activeTool === "measure_dist" || $gisStoreV2.activeTool === "measure_area")) {
+  $: if ($mapInstance && ($gisStoreV2.activeTool === "measure_dist" || $gisStoreV2.activeTool === "measure_area")) {
     reconcileMeasurements();
   }
 
   // Reconcile building-drawing overlays whenever points or active tool change.
-  $: if ($elbiMap && $gisStoreV2.activeTool === "draw_building") {
+  $: if ($mapInstance && $gisStoreV2.activeTool === "draw_building") {
     reconcileBuilding();
   }
 </script>

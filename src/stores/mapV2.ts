@@ -1,47 +1,50 @@
-import { writable, get } from "svelte/store";
-import { Map } from "leaflet";
+// stores/map.ts
+import type { Map, TileLayer } from "leaflet";
+import L from "leaflet";
+import { writable } from "svelte/store";
 
-export type BasemapType = "street" | "osm" | "satellite";
-export type LatLng = [number, number];
+export type BasemapType = "street" | "osm" | "satellite"; // Example types
 
-export interface MapState {
-  map: Map;
-  activeBasemap: BasemapType;
+// --- 1. Heavy State: The Map Instance ---
+export const mapInstance = writable<Map | null>(null);
+
+// --- 2. Hyper-active State: Mouse Coordinates ---
+export const mouseLatLng = writable<{ lat: number; lng: number } | null>(null);
+
+// --- 3. UI Settings State: The Controls ---
+interface MapSettings {
+  activeBasemap: TileLayer;
   showCentroids: boolean;
   showBoundaries: boolean;
   showGrid: boolean;
-  mouseLatLng: { lat: number; lng: number } | null;
 }
 
-function createMapStoreV2() {
-  const { subscribe, update } = writable<MapState>({
-    map: null as unknown as Map,
-    activeBasemap: "satellite",
+function createMapSettings() {
+  const { subscribe, set, update } = writable<MapSettings>({
+    activeBasemap: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }),
     showCentroids: false,
-    showBoundaries: false,
+    showBoundaries: true,
     showGrid: false,
-    mouseLatLng: null,
   });
 
   return {
     subscribe,
-    setMap: (map: Map) => update((s) => ({ ...s, map })),
-    setBasemap: (basemap: BasemapType) => update((s) => ({ ...s, activeBasemap: basemap })),
-    toggleOverlay: (overlay: "centroids" | "boundaries" | "grid", visible: boolean) =>
-      update((s) => {
-        if (overlay === "centroids") return { ...s, showCentroids: visible };
-        if (overlay === "boundaries") return { ...s, showBoundaries: visible };
-        if (overlay === "grid") return { ...s, showGrid: visible };
-        return s;
+    setBasemap: (basemap: TileLayer) => update((s) => ({ ...s, activeBasemap: basemap })),
+    toggleCentroids: () => update((s) => ({ ...s, showCentroids: !s.showCentroids })),
+    toggleBoundaries: () => update((s) => ({ ...s, showBoundaries: !s.showBoundaries })),
+    toggleGrid: () => update((s) => ({ ...s, showGrid: !s.showGrid })),
+    reset: () =>
+      set({
+        activeBasemap: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }),
+        showCentroids: false,
+        showBoundaries: true,
+        showGrid: false,
       }),
-    setMouseLatLng: (latlng: { lat: number; lng: number } | null) => update((s) => ({ ...s, mouseLatLng: latlng })),
-    triggerFitBounds: (points: LatLng[]) => {
-      const map = get(mapStoreV2).map;
-      if (map && points.length > 0) {
-        map.fitBounds(points, { padding: [50, 50], maxZoom: 18 });
-      }
-    },
   };
 }
 
-export const mapStoreV2 = createMapStoreV2();
+export const mapSettings = createMapSettings();
