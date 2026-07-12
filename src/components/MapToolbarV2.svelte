@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Layers, Map as MapIcon, Ruler, LocateFixed } from "lucide-svelte";
+  import { Map as MapIcon, Ruler, LocateFixed } from "lucide-svelte";
   import { fly } from "svelte/transition";
   import { createEventDispatcher } from "svelte";
-  import { gisStore } from "../stores/gis";
+  import { gisStoreV2 } from "../stores/gisV2";
   import BasemapPanelV2 from "./BasemapPanelV2.svelte";
   import MeasurePanelV2 from "./MeasurePanelV2.svelte";
 
@@ -22,17 +22,17 @@
       showBasemap = !showBasemap;
       if (showBasemap) {
         showMeasure = false;
-        gisStore.setGisTool("none");
+        gisStoreV2.setActiveTool("none");
       }
     } else if (id === "measure") {
       showMeasure = !showMeasure;
       if (showMeasure) {
         showBasemap = false;
-        if ($gisStore.gisTool !== "measure_dist" && $gisStore.gisTool !== "measure_area") {
-          gisStore.setGisTool("measure_dist");
+        if ($gisStoreV2.activeTool !== "measure_dist" && $gisStoreV2.activeTool !== "measure_area") {
+          gisStoreV2.setActiveTool("measure_dist");
         }
       } else {
-        gisStore.setGisTool("none");
+        gisStoreV2.setActiveTool("none");
       }
     }
   }
@@ -43,7 +43,7 @@
 
   function closeMeasure() {
     showMeasure = false;
-    gisStore.setGisTool("none");
+    gisStoreV2.setActiveTool("none");
   }
 
   function clickOutside(node: HTMLElement) {

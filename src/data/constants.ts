@@ -33,14 +33,6 @@ export enum FLOORS {
   F4 = "F4",
 }
 
-export enum STACKSTATUS {
-  HOME = "Home",
-  SEARCH = "Search",
-  BUILDING = "Building",
-  FLOOR = "Floor",
-  ROOM = "Room",
-}
-
 export enum COLLEGES {
   CAFS = "College of Agriculture and Food Sciences",
   CAS = "College of Arts and Sciences",

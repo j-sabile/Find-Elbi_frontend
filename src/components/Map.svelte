@@ -1,13 +1,12 @@
 <script lang="ts">
   export let classes = "";
   import { elbiMap } from "../stores/map";
-  import { gisStore } from "../stores/gis";
-  import type { BasemapType } from "../stores/gis";
-  import { mapStatus } from "../stores/mapStatus";
+  import { gisStoreV2 } from "../stores/gisV2";
+  import { mapStoreV2 } from "../stores/mapV2";
+  import type { BasemapType } from "../stores/mapV2";
   import L, { type TileLayer, type CircleMarker, type Polyline, type Polygon, type Circle } from "leaflet";
   import buildings from "../data/buildings";
-  import { findNearestBuilding, getHaversineDistance, calculatePolygonArea, calculatePolygonPerimeter } from "../utils/gisConvert";
-  import { handleSelectBuilding } from "../utils/mapUtil";
+  import { getHaversineDistance, calculatePolygonArea, calculatePolygonPerimeter } from "../utils/gisConvert";
 
   // ─── Tile layer references ──────────────────────────────────────────────────
   const TILE_URLS: Record<BasemapType, { url: string; options: any }> = {
@@ -75,7 +74,7 @@
       L.map(container, {
         zoomControl: false,
         preferCanvas: true,
-        maxZoom: 22,
+        maxZoom: 19,
         minZoom: 13,
       }).setView([14.163, 121.24], 17),
     );
@@ -84,15 +83,15 @@
     // L.control.zoom({ position: "topleft" }).addTo($elbiMap);
 
     // Load initial tile layer
-    applyBasemap($gisStore.activeBasemap);
+    applyBasemap($mapStoreV2.activeBasemap);
 
     // Mouse move → track coordinates
     $elbiMap.on("mousemove", (e: L.LeafletMouseEvent) => {
-      gisStore.setMouseLatLng({ lat: e.latlng.lat, lng: e.latlng.lng });
+      mapStoreV2.setMouseLatLng({ lat: e.latlng.lat, lng: e.latlng.lng });
     });
 
     $elbiMap.on("mouseout", () => {
-      gisStore.setMouseLatLng(null);
+      mapStoreV2.setMouseLatLng(null);
     });
 
     // Map click → delegate to active GIS tool
@@ -101,9 +100,9 @@
     });
 
     // Redraw grid on zoom/move
-    $elbiMap.on("moveend", () => {
-      if ($gisStore.overlayGrid) drawGrid();
-    });
+    // $elbiMap.on("moveend", () => {
+    //   if ($mapStoreV2.showGrid) drawGrid();
+    // });
   }
 
   // ─── Basemap management ──────────────────────────────────────────────────────
@@ -217,7 +216,7 @@
     if (!$elbiMap) return;
     clearBuffer();
 
-    const radius = $gisStore.bufferRadius;
+    const radius = $gisStoreV2.bufferRadius;
     bufferCircle = L.circle([lat, lng], {
       radius,
       color: "#38bdf8",
@@ -227,15 +226,13 @@
       dashArray: "6 4",
     }).addTo($elbiMap);
 
-    gisStore.setBufferCenter([lat, lng]);
+    gisStoreV2.executeBufferQuery([lat, lng]);
 
     // Find all buildings within the buffer radius
     const results = buildings
       .map((b) => ({ building: b, distance: getHaversineDistance([lat, lng], b.marker) }))
       .filter((r) => r.distance <= radius)
       .sort((a, b) => a.distance - b.distance);
-
-    gisStore.setBufferResults(results);
 
     // Highlight matched buildings with markers
     bufferMarkers = results.map((r) =>
@@ -266,14 +263,14 @@
     if (!$elbiMap) return;
     clearNearest();
 
-    const result = findNearestBuilding([lat, lng], $gisStore.nearestTargetType, buildings);
-    if (!result) return;
+    gisStoreV2.executeNearestQuery([lat, lng]);
+    const stored = $gisStoreV2.nearestResult;
+    if (!stored) return;
+    const building = buildings.find((b) => b.id === stored.buildingId);
+    if (!building) return;
 
-    // Walking time: assume average 1.2 m/s walking speed
-    const walkingTimeMin = Math.ceil(result.distance / 1.2 / 60);
-
-    gisStore.setNearestOrigin([lat, lng]);
-    gisStore.setNearestResult({ ...result, walkingTimeMin });
+    const result = { building, distance: stored.distance };
+    const walkingTimeMin = stored.walkingTimeMin;
 
     // Draw origin marker (pulsing look via CSS class)
     nearestOriginMarker = L.circleMarker([lat, lng], {
@@ -334,7 +331,7 @@
   // Undo/Clear (driven from the panel) also update the map.
   function addMeasurementPoint(lat: number, lng: number) {
     if (!$elbiMap) return;
-    gisStore.addMeasurementPoint([lat, lng]);
+    gisStoreV2.addPoint([lat, lng]);
   }
 
   // Rebuild all measurement overlays from the current store state.
@@ -352,7 +349,7 @@
     measureNodes.forEach((n) => n.removeFrom($elbiMap));
     measureNodes = [];
 
-    const points = $gisStore.measurementPoints;
+    const points = $gisStoreV2.draftPoints;
     if (points.length === 0) {
       setResultIfChanged({});
       return;
@@ -369,7 +366,7 @@
       }).addTo($elbiMap),
     );
 
-    if ($gisStore.gisTool === "measure_dist" && points.length >= 2) {
+    if ($gisStoreV2.activeTool === "measure_dist" && points.length >= 2) {
       measureLine = L.polyline(points, {
         color: "#10b981",
         weight: 2,
@@ -381,7 +378,7 @@
         totalDist += getHaversineDistance(points[i], points[i + 1]);
       }
       setResultIfChanged({ distance: totalDist });
-    } else if ($gisStore.gisTool === "measure_area" && points.length >= 3) {
+    } else if ($gisStoreV2.activeTool === "measure_area" && points.length >= 3) {
       measurePolygon = L.polygon(points, {
         color: "#10b981",
         fillColor: "#10b981",
@@ -401,9 +398,9 @@
   // Only write to the store when the computed result actually differs, to avoid
   // triggering the reactive reconciliation block in an infinite loop.
   function setResultIfChanged(next: { distance?: number; area?: number }) {
-    const cur = $gisStore.measurementResult;
-    const same = (cur.distance ?? undefined) === (next.distance ?? undefined) && (cur.area ?? undefined) === (next.area ?? undefined);
-    if (!same) gisStore.setMeasurementResult(next);
+    const cur = $gisStoreV2.measurementResult;
+    const same = (cur?.distance ?? undefined) === (next.distance ?? undefined) && (cur?.area ?? undefined) === (next.area ?? undefined);
+    if (!same) gisStoreV2.setMeasurementResult(next);
   }
 
   function clearMeasurements() {
@@ -422,11 +419,11 @@
 
   // ─── Unified Map Click Handler ────────────────────────────────────────────────
   function handleMapClick(lat: number, lng: number) {
-    const tool = $gisStore.gisTool;
+    const tool = $gisStoreV2.activeTool;
     if (tool === "buffer") runBufferQuery(lat, lng);
     else if (tool === "nearest") runNearestFacility(lat, lng);
     else if (tool === "measure_dist" || tool === "measure_area") addMeasurementPoint(lat, lng);
-    else if (tool === "draw_building") gisStore.addBuildingPoint([lat, lng]);
+    else if (tool === "draw_building") gisStoreV2.addPoint([lat, lng]);
   }
 
   // ── Add Building reconciliation ─────────────────────────────────────────────
@@ -447,7 +444,7 @@
     if (!$elbiMap) return;
     clearBuildingOverlays();
 
-    const pts = $gisStore.buildingPoints;
+    const pts = $gisStoreV2.draftPoints;
     if (pts.length === 0) return;
 
     buildingNodes = pts.map((pt, idx) =>
@@ -495,7 +492,8 @@
   let _prevTool: string | undefined;
 
   $: {
-    const { activeBasemap, overlayCentroids, overlayBoundary, overlayGrid, gisTool } = $gisStore;
+    const { activeBasemap, showCentroids, showBoundaries, showGrid } = $mapStoreV2;
+    const gisTool = $gisStoreV2.activeTool;
 
     if ($elbiMap) {
       // Basemap — only swap tile layer when basemap selection actually changes
@@ -505,23 +503,23 @@
       }
 
       // Centroids overlay
-      if (overlayCentroids !== _prevCentroids) {
-        _prevCentroids = overlayCentroids;
-        if (overlayCentroids) drawCentroids();
+      if (showCentroids !== _prevCentroids) {
+        _prevCentroids = showCentroids;
+        if (showCentroids) drawCentroids();
         else removeCentroids();
       }
 
       // Campus boundary overlay
-      if (overlayBoundary !== _prevBoundary) {
-        _prevBoundary = overlayBoundary;
-        if (overlayBoundary) drawBoundary();
+      if (showBoundaries !== _prevBoundary) {
+        _prevBoundary = showBoundaries;
+        if (showBoundaries) drawBoundary();
         else removeBoundary();
       }
 
       // UTM Grid overlay
-      if (overlayGrid !== _prevGrid) {
-        _prevGrid = overlayGrid;
-        if (overlayGrid) drawGrid();
+      if (showGrid !== _prevGrid) {
+        _prevGrid = showGrid;
+        if (showGrid) drawGrid();
         else removeGrid();
       }
 
@@ -531,11 +529,11 @@
         if (_prevTool === "nearest") clearNearest();
         if (_prevTool === "measure_dist" || _prevTool === "measure_area") {
           clearMeasurements();
-          gisStore.clearMeasurements();
+          gisStoreV2.clearDraft();
         }
         if (_prevTool === "draw_building") {
           clearBuildingOverlays();
-          gisStore.clearBuildingPoints();
+          gisStoreV2.clearDraft();
         }
 
         // Cursor style
@@ -549,12 +547,12 @@
 
   // Reconcile measurement overlays whenever the stored points or active tool change
   // (covers map clicks, Undo, Clear, and mode switches from the panel).
-  $: if ($elbiMap && ($gisStore.gisTool === "measure_dist" || $gisStore.gisTool === "measure_area")) {
+  $: if ($elbiMap && ($gisStoreV2.activeTool === "measure_dist" || $gisStoreV2.activeTool === "measure_area")) {
     reconcileMeasurements();
   }
 
   // Reconcile building-drawing overlays whenever points or active tool change.
-  $: if ($elbiMap && $gisStore.gisTool === "draw_building") {
+  $: if ($elbiMap && $gisStoreV2.activeTool === "draw_building") {
     reconcileBuilding();
   }
 </script>

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount, onDestroy, tick } from "svelte";
-  import { mapStatus } from "../stores/mapStatus";
+  import { navigationStoreV2 } from "../stores/navigationV2";
+  import { dataStoreV2 } from "../stores/dataV2";
   import type { ISearchResult } from "../interfaces/ISearchResult";
   import { searchV2 } from "../utils/searchV2";
-  import { handleSelectBuilding, handleUnselect } from "../utils/mapUtil";
   import SearchResultItemV2 from "./SearchResultItemV2.svelte";
 
   const SHORTCUT_KEY: string = "/";
@@ -19,7 +19,7 @@
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
   function runSearch(value: string) {
-    results = searchV2(value);
+    results = searchV2(value, $dataStoreV2.buildings);
     open = value.trim().length > 0 && results.length > 0;
     activeIndex = -1;
   }
@@ -30,9 +30,7 @@
   }
 
   function selectResult(result: ISearchResult) {
-    if (result.building) {
-      handleSelectBuilding(result.building);
-    }
+    navigationStoreV2.selectSearchResult(result);
     query = result.name;
     open = false;
     activeIndex = -1;
@@ -40,7 +38,7 @@
   }
 
   // When a building/room is selected, the search bar shows a back icon instead.
-  $: selected = $mapStatus.selectedBuilding !== undefined;
+  $: selected = $navigationStoreV2.selectedBuilding !== null;
 
   // Clear the search input when the selected building/room is unselected
   // (via the back button in this bar or the close button in the info card).
@@ -113,7 +111,7 @@
       <button
         class="flex items-center justify-center w-10 h-10 -ml-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-200 shrink-0"
         title="Back"
-        on:click={handleUnselect}
+        on:click={navigationStoreV2.closeAndReset}
       >
         <svg class="w-5 h-5 shrink-0 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 12H5M12 19l-7-7 7-7" />

@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { mapStatus } from "../stores/mapStatus";
+  import { navigationStoreV2 } from "../stores/navigationV2";
   import type { IBuilding } from "../interfaces/IBuilding";
   import type { IFloor } from "../interfaces/IFloor";
-  import { handleUnselect, handleSelectFloor, handleClearFloorOverlay } from "../utils/mapUtil";
   import BuildingTypeIconV2 from "./BuildingTypeIconV2.svelte";
   import { ROOM_TYPES } from "../data/constants";
   import { X, ChevronDown } from "lucide-svelte";
@@ -15,16 +14,14 @@
   $: totalRooms = (building.floors ?? []).reduce((sum, f) => sum + f.rooms.length, 0);
   $: totalFloors = building.floors?.length ?? 0;
 
-  // Only one floor dropdown open at a time.
-  let openFloor: string | null = null;
+  // Sync open floor dropdown state from the navigation store
+  $: openFloor = $navigationStoreV2.selectedFloor ? $navigationStoreV2.selectedFloor.level : null;
 
   function toggleFloor(floor: IFloor) {
     if (openFloor === floor.level) {
-      openFloor = null;
-      handleClearFloorOverlay();
+      navigationStoreV2.clearFloorSelection();
     } else {
-      openFloor = floor.level;
-      handleSelectFloor(floor);
+      navigationStoreV2.selectFloor(floor.level);
     }
   }
 
@@ -47,7 +44,7 @@
       <button
         class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-200 shrink-0"
         title="Close"
-        on:click={handleUnselect}
+        on:click={navigationStoreV2.closeAndReset}
       >
         <X class="w-5 h-5 shrink-0 text-gray-700" strokeWidth={2} />
       </button>
@@ -89,7 +86,10 @@
                 {:else}
                   <div class="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
                     {#each floor.rooms as room (room.code)}
-                      <div class="bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center gap-3 transition-all duration-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm">
+                      <button 
+                        class="w-full text-left bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center gap-3 transition-all duration-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm {$navigationStoreV2.selectedRoom && $navigationStoreV2.selectedRoom.code === room.code ? 'border-red-400 bg-red-50/30' : ''}"
+                        on:click={() => navigationStoreV2.selectRoom(room.code)}
+                      >
                         <div class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 bg-white shrink-0">
                           <BuildingTypeIconV2 type={building.type} kind="room" roomType={room.roomType} />
                         </div>
@@ -98,7 +98,7 @@
                           <span class="text-xs text-gray-500 truncate leading-tight">{room.name}</span>
                         </div>
                         <span class="text-xs text-gray-400 shrink-0 font-medium">{roomTypeLabel(room.roomType)}</span>
-                      </div>
+                      </button>
                     {/each}
                   </div>
                 {/if}

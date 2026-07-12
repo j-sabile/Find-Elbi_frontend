@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { gisStore } from "../stores/gis";
-  import type { GisToolType } from "../stores/gis";
+  import { gisStoreV2 } from "../stores/gisV2";
   import { createEventDispatcher } from "svelte";
   import { Ruler, Square, Spline, Undo2, Eraser } from "lucide-svelte";
   import ToolPanelV2 from "./ToolPanelV2.svelte";
@@ -14,26 +13,26 @@
     { id: "measure_area", label: "Area", icon: Square, hint: "Click points to draw a polygon" },
   ];
 
-  $: activeMode = $gisStore.gisTool === "measure_dist" || $gisStore.gisTool === "measure_area" ? $gisStore.gisTool : null;
-  $: points = $gisStore.measurementPoints;
-  $: result = $gisStore.measurementResult;
+  $: activeMode = $gisStoreV2.activeTool === "measure_dist" || $gisStoreV2.activeTool === "measure_area" ? $gisStoreV2.activeTool : null;
+  $: points = $gisStoreV2.draftPoints;
+  $: result = $gisStoreV2.measurementResult || {};
 
   function selectMode(mode: MeasureMode) {
-    gisStore.setGisTool(mode);
+    gisStoreV2.setActiveTool(mode);
   }
 
   function start() {
     if (!activeMode) return;
     // Begin a fresh measurement: clear any prior points/result for the active mode.
-    gisStore.clearMeasurements();
+    gisStoreV2.clearDraft();
   }
 
   function undo() {
-    gisStore.undoMeasurementPoint();
+    gisStoreV2.undoLastPoint();
   }
 
   function clear() {
-    gisStore.clearMeasurements();
+    gisStoreV2.clearDraft();
   }
 
   function formatDistance(m: number | undefined): string {
@@ -81,7 +80,7 @@
       Start
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+      class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-750 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
       on:click={undo}
       disabled={points.length === 0}
     >
@@ -89,7 +88,7 @@
       Undo
     </button>
     <button
-      class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+      class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-750 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
       on:click={clear}
       disabled={points.length === 0}
     >

@@ -1,27 +1,19 @@
 <script lang="ts">
-  import BottomPanel from "./components/BottomPanel.svelte";
   import Map from "./components/Map.svelte";
-  import SearchBar from "./components/SearchBar.svelte";
   import SearchBarV2 from "./components/SearchBarV2.svelte";
   import BuildingInfoCardV2 from "./components/BuildingInfoCardV2.svelte";
-  import GisSidebar from "./components/GisSidebar.svelte";
-  import GisCoordWidget from "./components/GisCoordWidget.svelte";
   import AddBuildingToolV2 from "./components/AddBuildingToolV2.svelte";
   import MapToolbarV2 from "./components/MapToolbarV2.svelte";
-  import { mapStatus } from "./stores/mapStatus";
+  import { navigationStoreV2 } from "./stores/navigationV2";
 </script>
 
 <div class="flex flex-col h-screen w-screen min-h-screen max-h-screen relative overflow-hidden bg-slate-900">
   <Map classes="flex flex-grow z-0" />
   <SearchBarV2 />
-  {#if $mapStatus.selectedBuilding}
-    <BuildingInfoCardV2 building={$mapStatus.selectedBuilding} />
+  {#if $navigationStoreV2.selectedBuilding}
+    <BuildingInfoCardV2 building={$navigationStoreV2.selectedBuilding} />
   {/if}
   <MapToolbarV2 />
-  <!-- <SearchBar /> -->
-  <!-- <BottomPanel /> -->
-  <!-- <GisSidebar /> -->
-  <!-- <GisCoordWidget /> -->
   <!-- <AddBuildingToolV2 /> -->
 </div>
 

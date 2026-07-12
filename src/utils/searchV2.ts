@@ -17,9 +17,9 @@ interface RoomFlat {
   roomType: ROOM_TYPES;
 }
 
-function flattenRooms(): RoomFlat[] {
+function flattenRoomsList(buildingsList: IBuilding[]): RoomFlat[] {
   const rooms: RoomFlat[] = [];
-  for (const building of buildings) {
+  for (const building of buildingsList) {
     if (!building.floors) continue;
     for (const floor of building.floors) {
       for (const room of floor.rooms) {
@@ -38,27 +38,6 @@ function flattenRooms(): RoomFlat[] {
   }
   return rooms;
 }
-
-const buildingIndex = new Fuse(buildings, {
-  keys: [
-    { name: "name", weight: 0.4 },
-    { name: "alternateNames", weight: 0.4 },
-    { name: "type", weight: 0.2 },
-  ],
-  includeScore: true,
-  threshold: 0.3,
-});
-
-const roomIndex = new Fuse(flattenRooms(), {
-  keys: [
-    { name: "name", weight: 0.5 },
-    { name: "alternateNames", weight: 0.1 },
-    { name: "roomType", weight: 0.2 },
-    { name: "building.name", weight: 0.2 },
-  ],
-  includeScore: true,
-  threshold: 0.3,
-});
 
 function buildingToResult(b: IBuilding): ISearchResult {
   return {
@@ -95,9 +74,30 @@ function topResults<T extends { score?: number }>(results: T[], toResult: (item:
   return out;
 }
 
-export function searchV2(input: string): ISearchResult[] {
+export function searchV2(input: string, buildingsList: IBuilding[] = buildings): ISearchResult[] {
   const trimmed = input.trim();
   if (trimmed.length === 0) return [];
+
+  const buildingIndex = new Fuse(buildingsList, {
+    keys: [
+      { name: "name", weight: 0.4 },
+      { name: "alternateNames", weight: 0.4 },
+      { name: "type", weight: 0.2 },
+    ],
+    includeScore: true,
+    threshold: 0.3,
+  });
+
+  const roomIndex = new Fuse(flattenRoomsList(buildingsList), {
+    keys: [
+      { name: "name", weight: 0.5 },
+      { name: "alternateNames", weight: 0.1 },
+      { name: "roomType", weight: 0.2 },
+      { name: "building.name", weight: 0.2 },
+    ],
+    includeScore: true,
+    threshold: 0.3,
+  });
 
   const buildingHits = buildingIndex.search(trimmed);
   const roomHits = roomIndex.search(trimmed);

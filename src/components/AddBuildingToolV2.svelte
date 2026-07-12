@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import L from "leaflet";
-  import { elbiMap } from "../stores/map";
-  import { gisStore } from "../stores/gis";
+  import { gisStoreV2 } from "../stores/gisV2";
+  import { dataStoreV2 } from "../stores/dataV2";
+  import { mapStoreV2 } from "../stores/mapV2";
   import { TYPES, COLLEGES } from "../data/constants";
-  import buildings from "../data/buildings";
   import { calculatePolygonArea, calculatePolygonPerimeter } from "../utils/gisConvert";
 
   // State
@@ -31,26 +31,26 @@
 
   // Drawing state is driven entirely by the gisStore tool selection so that
   // map clicks are routed correctly through Map.svelte (single click handler).
-  $: isDrawing = $gisStore.gisTool === "draw_building";
-  $: polygonPoints = $gisStore.buildingPoints;
+  $: isDrawing = $gisStoreV2.activeTool === "draw_building";
+  $: polygonPoints = $gisStoreV2.draftPoints;
 
   // Initialize
   onMount(() => {
     id = getNextId();
-    if ($elbiMap) {
-      draftLayers = L.featureGroup().addTo($elbiMap);
+    if ($mapStoreV2.map) {
+      draftLayers = L.featureGroup().addTo($mapStoreV2.map);
     }
   });
 
   onDestroy(() => {
-    if (draftLayers && $elbiMap) {
-      draftLayers.removeFrom($elbiMap);
+    if (draftLayers && $mapStoreV2.map) {
+      draftLayers.removeFrom($mapStoreV2.map);
     }
   });
 
   // Calculate next hexadecimal ID (e.g. 001E)
   function getNextId(): string {
-    const allIds = [...buildings.map((b) => b.id), ...drafts.map((d) => d.id)];
+    const allIds = [...$dataStoreV2.buildings.map((b) => b.id), ...drafts.map((d) => d.id)];
     let maxVal = 0;
     allIds.forEach((idStr) => {
       const val = parseInt(idStr, 16);
@@ -74,19 +74,19 @@
 
   function toggleDrawing() {
     if (isDrawing) {
-      gisStore.setGisTool("none");
+      gisStoreV2.setActiveTool("none");
     } else {
-      gisStore.setGisTool("draw_building");
+      gisStoreV2.setActiveTool("draw_building");
     }
   }
 
   function handleUndo() {
     if (polygonPoints.length === 0) return;
-    gisStore.undoBuildingPoint();
+    gisStoreV2.undoLastPoint();
   }
 
   function handleClear() {
-    gisStore.clearBuildingPoints();
+    gisStoreV2.clearDraft();
   }
 
   // Reactive variables for details
@@ -145,22 +145,27 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find((k) => COLLEG
       return;
     }
 
-    const draft = {
+    const draftMeta = {
       id,
       name: name || "Unnamed Building",
       type,
       college: type === TYPES.ACADEMIC ? college : undefined,
       alternateNames,
       address: address || "Unknown Road",
+    };
+
+    const draft = {
+      ...draftMeta,
       marker: centroid,
       polygon: [...polygonPoints],
       code: codeBlock,
     };
 
+    gisStoreV2.saveDraftBuilding(draftMeta as any);
     drafts = [...drafts, draft];
 
     // Add to preview layers on map
-    if ($elbiMap && draftLayers) {
+    if ($mapStoreV2.map && draftLayers) {
       const pLayer = L.polygon(draft.polygon, {
         color: "#2563eb", // blue-600
         fillColor: "#2563eb",
@@ -186,7 +191,7 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find((k) => COLLEG
     name = "";
     alternateNamesStr = "";
     address = "";
-    gisStore.clearBuildingPoints();
+    gisStoreV2.clearDraft();
 
     // Auto-update ID for next draft
     id = getNextId();
