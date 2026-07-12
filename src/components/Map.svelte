@@ -39,8 +39,8 @@
     // Base UI
     L.polyline(CAMPUS_BOUNDARY, { color: "#ef4444", weight: 2, dashArray: "8 6", opacity: 0.8 }).bindTooltip("UPLB Campus Boundary", { sticky: true, opacity: 0.8 }).addTo(map);
 
-    L.control.scale({ position: "topright", metric: true, imperial: false }).addTo(map);
-    L.control.zoom({ position: "topleft" }).addTo(map);
+    // L.control.scale({ position: "topright", metric: true, imperial: false }).addTo(map);
+    // L.control.zoom({ position: "topleft" }).addTo(map);
 
     // Set initial basemap
     $mapSettings.activeBasemap.addTo(map);
