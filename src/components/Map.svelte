@@ -6,6 +6,7 @@
   import buildings from "../data/buildings";
   import { getHaversineDistance, calculatePolygonArea, calculatePolygonPerimeter } from "../utils/gisConvert";
   import { CAMPUS_BOUNDARY } from "../data/constants";
+  import { navigationStoreV2 } from "../stores/navigationV2";
 
   // ─── Basemap management ──────────────────────────────────────────────────────
   let currentBasemap: TileLayer | undefined;
@@ -22,14 +23,14 @@
     const map = L.map(container, {
       zoomControl: false,
       preferCanvas: true,
-      maxZoom: 19,
+      maxZoom: 18,
       minZoom: 13,
     }).setView([14.163, 121.24], 17);
     mapInstance.set(map);
 
     L.polyline(CAMPUS_BOUNDARY, { color: "#ef4444", weight: 2, dashArray: "8 6", opacity: 0.8 }).bindTooltip("UPLB Campus Boundary", { sticky: true, opacity: 0.8 }).addTo(map);
-    L.control.scale({ position: "topright", metric: true, imperial: false }).addTo(map);
-    L.control.zoom({ position: "topleft" }).addTo(map);
+    // L.control.scale({ position: "topright", metric: true, imperial: false }).addTo(map);
+    // L.control.zoom({ position: "topleft" }).addTo(map);
 
     $mapSettings.activeBasemap.addTo(map);
     map.on("click", (e: L.LeafletMouseEvent) => handleMapClick(e.latlng.lat, e.latlng.lng));
@@ -485,11 +486,4 @@
 </script>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<div class="map {classes}" use:createMap />
-
-<style>
-  .map {
-    width: 100vw;
-    height: 100vh;
-  }
-</style>
+<div class="map w-screen h-screen {classes}" use:createMap />

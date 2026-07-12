@@ -64,7 +64,7 @@
   }
 </script>
 
-<div class="absolute bottom-4 right-4 z-20 flex flex-col gap-4 items-end">
+<div class="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-10 flex flex-col gap-4 items-end">
   <div class="relative w-full min-h-0">
     {#if showBasemap}
       <div class="absolute bottom-0 right-0" use:clickOutside transition:fly={{ y: 20, duration: 250 }}>
@@ -79,7 +79,7 @@
     {/if}
   </div>
 
-  <div class="flex gap-3 bg-white border border-gray-200 rounded-2xl shadow-lg p-4">
+  <div class="absolute bottom-0 sm:relative gap-2 sm:gap-3 bg-white border border-gray-200 rounded-2xl shadow-lg p-3 sm:p-4 {showBasemap || showMeasure ? 'hidden sm:flex' : 'flex'}">
     {#each tools as tool}
       <button
         class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-200

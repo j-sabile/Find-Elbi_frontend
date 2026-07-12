@@ -99,13 +99,9 @@
   });
 </script>
 
-<div class="absolute top-4 left-4 z-20 flex flex-col gap-3 pointer-events-auto w-[26rem] max-w-[calc(100vw-2rem)]">
+<div class="absolute top-1 sm:top-4 left-4 z-20 flex flex-col gap-3 pointer-events-auto w-full sm:w-[26rem] max-w-[calc(100vw-2rem)]">
   <!-- Search input bar (FLOATING surface) -->
-  <div
-    class="bg-white border rounded-2xl shadow-lg flex items-center gap-3 px-4 py-3 transition-all duration-200 {focused
-      ? 'border-blue-300 ring-2 ring-blue-500/30'
-      : 'border-gray-200'}"
-  >
+  <div class="bg-white border rounded-2xl shadow-lg flex items-center gap-3 px-4 py-3 transition-all duration-200 {focused ? 'border-blue-300 ring-2 ring-blue-500/30' : 'border-gray-200'}">
     <!-- Left: back icon when a building/room is selected, else search icon -->
     {#if selected}
       <button
@@ -118,15 +114,7 @@
         </svg>
       </button>
     {:else}
-      <svg
-        class="w-5 h-5 shrink-0 text-gray-500"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+      <svg class="w-5 h-5 shrink-0 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="7" />
         <path d="M21 21l-4.3-4.3" />
       </svg>
@@ -158,11 +146,7 @@
     <div class="bg-white border border-gray-200 rounded-2xl shadow-lg flex flex-col overflow-hidden">
       <div class="flex flex-col divide-y divide-gray-200 max-h-96 overflow-y-auto">
         {#each results as result, i}
-          <SearchResultItemV2
-            result={result}
-            active={i === activeIndex}
-            on:click={() => selectResult(result)}
-          />
+          <SearchResultItemV2 {result} active={i === activeIndex} on:click={() => selectResult(result)} />
         {/each}
       </div>
     </div>

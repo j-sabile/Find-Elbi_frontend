@@ -10,7 +10,7 @@
 <ToolPanelV2 title="Basemaps" closeOnOutside on:close={() => dispatch("close")}>
   <span class="text-sm text-gray-500">Select a base layer for the map</span>
 
-  <div class="grid grid-cols-1 gap-3 w-80">
+  <div class="grid grid-cols-1 gap-3">
     {#each basemaps as basemap}
       <button
         class="flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 hover:bg-gray-50 text-left w-full {$mapSettings.activeBasemap === basemap.tileLayer

@@ -64,7 +64,7 @@ export const basemaps: Basemap[] = [
     meta: "Esri World Street Map",
     thumb: "https://placehold.co/300x180/e2e8f0/64748b?text=Street",
     tileLayer: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-      attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012",
+      attribution: "",
     }),
   },
   {
@@ -73,7 +73,7 @@ export const basemaps: Basemap[] = [
     meta: "OSM Standard Tiles",
     thumb: "https://placehold.co/300x180/dcfce7/166534?text=OSM",
     tileLayer: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      attribution: "",
     }),
   },
   {
@@ -82,7 +82,7 @@ export const basemaps: Basemap[] = [
     meta: "Esri World Imagery",
     thumb: "https://placehold.co/300x180/1e293b/e2e8f0?text=Satellite",
     tileLayer: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-      attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012",
+      attribution: "",
     }),
   },
 ];

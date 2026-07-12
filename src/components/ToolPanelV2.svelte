@@ -6,7 +6,7 @@
   export let title: string;
   export let closeOnOutside = false;
   export let showClose = closeOnOutside;
-  export let width = "w-fit";
+  // export let width = "w-fit";
 
   const dispatch = createEventDispatcher();
 
@@ -27,7 +27,7 @@
   }
 </script>
 
-<div class="bg-white border border-gray-200 rounded-2xl shadow-lg {width} p-4 flex flex-col gap-4" use:clickOutside transition:fly={{ y: 20, duration: 250 }}>
+<div class="bg-white border border-gray-200 rounded-2xl shadow-lg w-[85vw] max-w-sm p-4 flex flex-col gap-2 sm:gap-4" use:clickOutside transition:fly={{ y: 20, duration: 250 }}>
   <div class="flex items-center justify-between gap-3">
     <span class="text-lg font-semibold tracking-tight text-gray-900">{title}</span>
     {#if showClose}
