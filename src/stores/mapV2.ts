@@ -1,7 +1,7 @@
 // stores/map.ts
 import type { Map, TileLayer } from "leaflet";
-import L from "leaflet";
 import { writable } from "svelte/store";
+import { DEFAULT_BASEMAP } from "../data/constants";
 
 export type BasemapType = "street" | "osm" | "satellite"; // Example types
 
@@ -20,14 +20,7 @@ interface MapSettings {
 }
 
 function createMapSettings() {
-  const { subscribe, set, update } = writable<MapSettings>({
-    activeBasemap: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }),
-    showCentroids: false,
-    showBoundaries: true,
-    showGrid: false,
-  });
+  const { subscribe, set, update } = writable<MapSettings>({ ...defaultMapSettings });
 
   return {
     subscribe,
@@ -35,16 +28,15 @@ function createMapSettings() {
     toggleCentroids: () => update((s) => ({ ...s, showCentroids: !s.showCentroids })),
     toggleBoundaries: () => update((s) => ({ ...s, showBoundaries: !s.showBoundaries })),
     toggleGrid: () => update((s) => ({ ...s, showGrid: !s.showGrid })),
-    reset: () =>
-      set({
-        activeBasemap: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }),
-        showCentroids: false,
-        showBoundaries: true,
-        showGrid: false,
-      }),
+    reset: () => set({ ...defaultMapSettings }),
   };
 }
+
+const defaultMapSettings: MapSettings = {
+  activeBasemap: DEFAULT_BASEMAP.tileLayer,
+  showCentroids: false,
+  showBoundaries: true,
+  showGrid: false,
+};
 
 export const mapSettings = createMapSettings();

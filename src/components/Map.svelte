@@ -5,8 +5,7 @@
   import L, { type TileLayer, type CircleMarker, type Polyline, type Polygon, type Circle } from "leaflet";
   import buildings from "../data/buildings";
   import { getHaversineDistance, calculatePolygonArea, calculatePolygonPerimeter } from "../utils/gisConvert";
-  import { CAMPUS_BOUNDARY } from "../data/constants";
-  import { navigationStoreV2 } from "../stores/navigationV2";
+  import { CAMPUS_BOUNDARY, DEFAULT_MAP_SETTINGS } from "../data/constants";
 
   // ─── Basemap management ──────────────────────────────────────────────────────
   let currentBasemap: TileLayer | undefined;
@@ -23,14 +22,14 @@
     const map = L.map(container, {
       zoomControl: false,
       preferCanvas: true,
-      maxZoom: 18,
-      minZoom: 13,
-    }).setView([14.163, 121.24], 17);
+      maxZoom: DEFAULT_MAP_SETTINGS.maxZoom,
+      minZoom: DEFAULT_MAP_SETTINGS.minZoom,
+    }).setView(DEFAULT_MAP_SETTINGS.center, DEFAULT_MAP_SETTINGS.initialZoom);
     mapInstance.set(map);
 
     L.polyline(CAMPUS_BOUNDARY, { color: "#ef4444", weight: 2, dashArray: "8 6", opacity: 0.8 }).bindTooltip("UPLB Campus Boundary", { sticky: true, opacity: 0.8 }).addTo(map);
     // L.control.scale({ position: "topright", metric: true, imperial: false }).addTo(map);
-    // L.control.zoom({ position: "topleft" }).addTo(map);
+    // L.control.zoom({ position: "topright" }).addTo(map);
 
     $mapSettings.activeBasemap.addTo(map);
     map.on("click", (e: L.LeafletMouseEvent) => handleMapClick(e.latlng.lat, e.latlng.lng));

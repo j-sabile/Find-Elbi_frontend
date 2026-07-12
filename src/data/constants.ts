@@ -49,6 +49,14 @@ export enum COLLEGES {
   SESM = "School of Environmental Science and Management",
 }
 
+export const DEFAULT_MAP_SETTINGS = {
+  minZoom: 13,
+  maxZoom: 22,
+  maxNativeZoom: 19,
+  initialZoom: 17,
+  center: [14.163, 121.24] as [number, number],
+};
+
 type Basemap = {
   id: string;
   title: string;
@@ -65,6 +73,8 @@ export const basemaps: Basemap[] = [
     thumb: "https://placehold.co/300x180/e2e8f0/64748b?text=Street",
     tileLayer: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
       attribution: "",
+      maxZoom: DEFAULT_MAP_SETTINGS.maxZoom,
+      maxNativeZoom: DEFAULT_MAP_SETTINGS.maxNativeZoom,
     }),
   },
   {
@@ -74,6 +84,8 @@ export const basemaps: Basemap[] = [
     thumb: "https://placehold.co/300x180/dcfce7/166534?text=OSM",
     tileLayer: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "",
+      maxZoom: DEFAULT_MAP_SETTINGS.maxZoom,
+      maxNativeZoom: DEFAULT_MAP_SETTINGS.maxNativeZoom,
     }),
   },
   {
@@ -83,9 +95,12 @@ export const basemaps: Basemap[] = [
     thumb: "https://placehold.co/300x180/1e293b/e2e8f0?text=Satellite",
     tileLayer: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
       attribution: "",
+      maxZoom: DEFAULT_MAP_SETTINGS.maxZoom,
+      maxNativeZoom: DEFAULT_MAP_SETTINGS.maxNativeZoom,
     }),
   },
 ];
+export const DEFAULT_BASEMAP = basemaps[1];
 
 export const CAMPUS_BOUNDARY: [number, number][] = [
   [14.1649, 121.2371],
