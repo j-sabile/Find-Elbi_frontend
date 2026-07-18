@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { TYPES, ROOM_TYPES } from "../data/constants";
+  import { BUILDING_TYPES, RoomType, type BuildingType } from "../data/constants";
   import {
     GraduationCap,
     House,
@@ -22,30 +22,30 @@
     Bath,
   } from "lucide-svelte";
 
-  export let type: TYPES | ROOM_TYPES;
+  export let type: BuildingType | RoomType;
 
   const ICONS: Record<string, any> = {
-    [TYPES.ACADEMIC]: GraduationCap,
-    [TYPES.DORMITORY]: House,
-    [TYPES.PARK]: TreePine,
-    [TYPES.COMMUNITY]: Users,
-    [TYPES.LANDMARK]: Landmark,
-    [TYPES.SHOP]: Store,
-    [TYPES.GYM]: Dumbbell,
-    [TYPES.LIBRARY]: Library,
-    [TYPES.ADMINOFFICE]: Briefcase,
-    [TYPES.CLINIC]: Stethoscope,
-    [TYPES.BANK]: Banknote,
-    [TYPES.SUPPORT]: Wrench,
-    [TYPES.LAUNDRY]: WashingMachine,
+    [BUILDING_TYPES.ACADEMIC]: GraduationCap,
+    [BUILDING_TYPES.DORMITORY]: House,
+    [BUILDING_TYPES.PARK]: TreePine,
+    [BUILDING_TYPES.COMMUNITY]: Users,
+    [BUILDING_TYPES.LANDMARK]: Landmark,
+    [BUILDING_TYPES.SHOP]: Store,
+    [BUILDING_TYPES.GYM]: Dumbbell,
+    [BUILDING_TYPES.LIBRARY]: Library,
+    [BUILDING_TYPES.ADMINOFFICE]: Briefcase,
+    [BUILDING_TYPES.CLINIC]: Stethoscope,
+    [BUILDING_TYPES.BANK]: Banknote,
+    [BUILDING_TYPES.SUPPORT]: Wrench,
+    [BUILDING_TYPES.LAUNDRY]: WashingMachine,
 
-    [ROOM_TYPES.ACADEMIC]: BookOpen,
-    [ROOM_TYPES.FACULTY]: User,
-    [ROOM_TYPES.ADMIN]: Briefcase,
-    [ROOM_TYPES.LABORATORY]: FlaskConical,
-    [ROOM_TYPES.LECTURE_HALL]: Presentation,
-    [ROOM_TYPES.DORM]: Bed,
-    [ROOM_TYPES.CR]: Bath,
+    [RoomType.ACADEMIC]: BookOpen,
+    [RoomType.FACULTY]: User,
+    [RoomType.ADMIN]: Briefcase,
+    [RoomType.LABORATORY]: FlaskConical,
+    [RoomType.LECTURE_HALL]: Presentation,
+    [RoomType.DORM]: Bed,
+    [RoomType.CR]: Bath,
   };
 </script>
 

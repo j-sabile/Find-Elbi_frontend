@@ -1,4 +1,4 @@
-import { COLLEGES, TYPES, type IFloor } from "../data/constants";
+import { type College, type BuildingType, type IFloor, BUILDING_TYPES } from "../data/constants";
 
 interface IBaseBuilding {
   id: string;
@@ -12,13 +12,17 @@ interface IBaseBuilding {
 }
 
 export interface IRegBuilding extends IBaseBuilding {
-  type: Exclude<TYPES, TYPES.ACADEMIC>;
+  type: Exclude<BuildingType, typeof BUILDING_TYPES.ACADEMIC>;
 }
 
 export interface IAcadBuilding extends IBaseBuilding {
-  type: TYPES.ACADEMIC;
-  college: COLLEGES;
+  type: typeof BUILDING_TYPES.ACADEMIC;
+  college: College;
 }
 
-export type Section = { id: string; polygon: [number, number][] };
+export type Section = {
+  id: string;
+  polygon: [number, number][];
+};
+
 export type IBuilding = IRegBuilding | IAcadBuilding;

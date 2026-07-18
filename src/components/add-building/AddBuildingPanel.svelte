@@ -15,25 +15,20 @@
   import RoomForm from "./RoomForm.svelte";
   import GeometryTools from "./GeometryTools.svelte";
   import { drawBuildingStore } from "../../stores/drawBuilding";
-  import { TYPES } from "../../data/constants";
+  import { BUILDING_TYPES } from "../../data/constants";
   import FloorDropdowns from "../FloorDropdowns.svelte";
+  import { copyBuildingJsonToClipboard } from "../../utils/copyBuildingToClipboard";
 
   // Widget State
   let isOpen = true;
   let activeTab: "sections" | "trace" | "summary" = "sections";
   let traceTarget: "building" | "room" = "building";
-  let copyStatus = "Copy";
 
-  // Map Integration State
   let draftLayers: L.FeatureGroup | null = null;
-  // let drafts: any[] = []; // Recommended: create an IDraft union interface
 
   // Reactive Data Sources
   $: polygonPoints = $drawBuildingStore.sections.find((s) => $drawBuildingStore.selectedSectionId === s.id)?.polygon || [];
   $: centroid = GeometryService.getCentroid(polygonPoints);
-
-  // Dynamically calculate the next ID based on store + local session drafts
-  // $: nextBuildingId = getNextId($dataStoreV2.buildings, drafts);
 
   onMount(() => {
     if ($mapInstance) {
@@ -47,82 +42,13 @@
     }
   });
 
-  function getNextId(existingBuildings: any[], currentDrafts: any[]): string {
-    const allIds = [...existingBuildings.map((b) => b.id), ...currentDrafts.filter((d) => d.traceTarget === "building").map((d) => d.id)];
-    let maxVal = 0;
-    allIds.forEach((idStr) => {
-      const val = parseInt(idStr, 16);
-      if (!isNaN(val) && val > maxVal) {
-        maxVal = val;
-      }
-    });
-    return (maxVal + 1).toString(16).toUpperCase().padStart(4, "0");
-  }
-
   // --- Handlers --- //
-
-  function handleSaveDraft(event: CustomEvent) {
-    // const draft = { ...event.detail, traceTarget };
-    // if (traceTarget === "building") {
-    //   gisStoreV2.saveDraftBuilding(draft as any);
-    // }
-    // drawDraftOnMap(draft);
-    // gisStoreV2.clearDraft();
-  }
-
-  function handleCopy(event: CustomEvent | string) {
-    const textToCopy = typeof event === "string" ? event : event.detail;
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      copyStatus = "Copied!";
-      setTimeout(() => (copyStatus = "Copy"), 2000);
-    });
-  }
-
   function clearAllDrafts() {
-    if (confirm("Are you sure you want to clear all session drafts?")) {
-      // drawBuildingStore.
-      // if (draftLayers) draftLayers.clearLayers();
-    }
+    confirm("Are you sure you want to clear all session drafts?");
   }
 
-  function copyAllDraftsCode() {
-    // if (drafts.length === 0) return;
-    // const allCode = drafts.map((d) => d.code).join("\n\n");
-    // handleCopy(allCode);
-  }
-
-  // --- Map Utilities --- //
-
-  function drawDraftOnMap(draft: any) {
-    if (!$mapInstance || !draftLayers) return;
-
-    const isBuilding = draft.traceTarget === "building";
-    const pLayer = L.polygon(draft.polygon, {
-      color: isBuilding ? "#2563eb" : "#16a34a",
-      fillColor: isBuilding ? "#2563eb" : "#16a34a",
-      fillOpacity: 0.1,
-      weight: 2,
-      dashArray: "4 4",
-    });
-
-    const layers = [pLayer];
-
-    // Only draw marker tooltips for buildings to avoid map clutter
-    // if (isBuilding && draft.marker) {
-    //   const mLayer = L.marker(draft.marker, {
-    //     icon: L.divIcon({
-    //       className: "custom-draft-icon",
-    //       html: `<div class="flex items-center justify-center w-5 h-5 bg-blue-600 border border-gray-200 rounded-full shadow-lg text-[10px] font-semibold text-white">D</div>`,
-    //       iconSize: [20, 20],
-    //       iconAnchor: [10, 10],
-    //     }),
-    //   }).bindTooltip(`<b>${draft.name}</b> (Draft ${draft.id})<br>${draft.type}`, { direction: "top" });
-
-    //   layers.push(mLayer);
-    // }
-
-    const group = L.featureGroup(layers).addTo(draftLayers);
-    draftLayers.addLayer(group);
+  function copyCode() {
+    if ($drawBuildingStore.building) copyBuildingJsonToClipboard($drawBuildingStore.building);
   }
 </script>
 
@@ -206,7 +132,7 @@
           </div>
 
           {#if traceTarget === "building"}
-            <BuildingForm {centroid} {polygonPoints} />
+            <BuildingForm {polygonPoints} />
           {:else}
             <RoomForm {polygonPoints} />
           {/if}
@@ -220,74 +146,63 @@
                 <span class="text-xs text-gray-500">Trace a section and save to store it here for export.</span>
               </div>
             {:else}
-              <div class="flex flex-row w-full justify-between items-center">
-                <span class="text-sm text-gray-700 font-semibold">Draft</span>
-                <div class="flex items-center gap-2">
+              <div class="flex flex-col h-full w-full">
+                <!-- Main Content Flow -->
+                <div class="flex flex-col pb-6">
+                  <!-- 1. HEADER: Identity (Name, Chips, Alt Names) -->
+                  <div class="flex flex-col gap-3 border-b border-gray-100 pb-5">
+                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">
+                      {$drawBuildingStore.building.name || "Unnamed Building"}
+                    </h1>
+
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <!-- Chips -->
+                      <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 border border-blue-100 capitalize">
+                        {$drawBuildingStore.building.type.replace("_", " ")}
+                      </span>
+
+                      {#if $drawBuildingStore.building.type === BUILDING_TYPES.ACADEMIC}
+                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700 border border-gray-200">
+                          {$drawBuildingStore.building.college}
+                        </span>
+                      {/if}
+
+                      <!-- Alt Names -->
+                      {#if $drawBuildingStore.building.alternateNames && $drawBuildingStore.building.alternateNames.length > 0}
+                        <span class="hidden sm:inline text-gray-300">&vert;</span>
+                        <span class="text-sm font-medium">
+                          {$drawBuildingStore.building.alternateNames.join(", ")}
+                        </span>
+                        | <span class="text-sm">{$drawBuildingStore.building.address}</span>
+                      {/if}
+                    </div>
+                  </div>
+
+                  <!-- 3. CONTENTS: Floor Plans -->
+                  <div class="flex flex-col mt-2">
+                    <h2 class="text-lg font-semibold text-gray-900">Floor Plans</h2>
+                    <div class="w-full">
+                      <FloorDropdowns building={$drawBuildingStore.building} />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4. ACTIONS BAR (Pushed to bottom) -->
+                <div class="mt-auto pt-5 border-t border-gray-200 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
                   <button
-                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-3 py-1.5 text-xs font-medium transition-colors duration-200 hover:bg-blue-700"
-                    on:click={copyAllDraftsCode}
-                  >
-                    Copy All
-                  </button>
-                  <button
-                    class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-red-600 px-3 py-1.5 text-xs font-medium hover:bg-red-50 transition-colors duration-200"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2.5 text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
                     on:click={clearAllDrafts}
                   >
                     Clear All
                   </button>
+                  <button
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2.5 text-sm font-semibold hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 shadow-sm"
+                    on:click={copyCode}
+                  >
+                    Copy All
+                  </button>
                 </div>
               </div>
-              <div class="bg-white border border-gray-200 rounded-xl p-4 flex flex-col gap-3 shadow-sm">
-                <h3 class="text-sm font-semibold text-gray-800 border-b border-gray-100 pb-2">Building Details</h3>
-
-                <div class="grid grid-cols-[100px_1fr] gap-y-2 gap-x-3 text-sm">
-                  <!-- ID -->
-                  <span class="text-gray-500 font-medium">ID</span>
-                  <span class="text-gray-800 font-mono text-xs self-center truncate" title={$drawBuildingStore.building.id}>
-                    {$drawBuildingStore.building.id}
-                  </span>
-
-                  <!-- Name -->
-                  <span class="text-gray-500 font-medium">Name</span>
-                  <span class="text-gray-800 font-medium">
-                    {$drawBuildingStore.building.name || "Unnamed Building"}
-                  </span>
-
-                  <!-- Alternate Names -->
-                  <span class="text-gray-500 font-medium">Alt Names</span>
-                  <span class="text-gray-800">
-                    {#if $drawBuildingStore.building.alternateNames && $drawBuildingStore.building.alternateNames.length > 0}
-                      {$drawBuildingStore.building.alternateNames.join(", ")}
-                    {:else}
-                      <span class="text-gray-400 italic">None</span>
-                    {/if}
-                  </span>
-
-                  <!-- Address -->
-                  <span class="text-gray-500 font-medium">Address</span>
-                  <span class="text-gray-800">
-                    {$drawBuildingStore.building.address || "No address provided"}
-                  </span>
-
-                  <!-- Polygon Vertices -->
-                  <span class="text-gray-500 font-medium">Polygon</span>
-                  <span class="text-gray-800">
-                    <span class="font-semibold text-blue-600">
-                      {$drawBuildingStore.building.polygon?.length || 0}
-                    </span> vertices
-                  </span>
-
-                  <!-- Type / College -->
-                  <span class="text-gray-500 font-medium">Type</span>
-                  <span class="text-gray-800 capitalize">
-                    {$drawBuildingStore.building.type.replace("_", " ")}
-                    {#if $drawBuildingStore.building.type === TYPES.ACADEMIC}
-                      ({$drawBuildingStore.building.college})
-                    {/if}
-                  </span>
-                </div>
-              </div>
-              <FloorDropdowns building={$drawBuildingStore.building} />
             {/if}
           </div>
         {/if}

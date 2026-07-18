@@ -1,4 +1,4 @@
-import type { ROOM_TYPES } from "../data/constants";
+import type { RoomType } from "../data/constants";
 
 export interface IRoom {
   id: string;
@@ -6,5 +6,5 @@ export interface IRoom {
   code: string;
   alternateNames: string[];
   polygon: [number, number][];
-  roomType: ROOM_TYPES;
+  roomType: RoomType;
 }

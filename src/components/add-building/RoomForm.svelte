@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ROOM_TYPES } from "../../data/constants";
+  import { RoomType } from "../../data/constants";
   import { drawBuildingStore, selectedSection } from "../../stores/drawBuilding";
   import { get } from "svelte/store";
   import FloorChips from "../FloorChips.svelte";
@@ -10,7 +10,7 @@
   // Local Form State
   let roomCode = "";
   let roomName = "";
-  let roomType = ROOM_TYPES.ACADEMIC;
+  let roomType = RoomType.ACADEMIC;
   let roomAlternateNamesStr = "";
   let floorLevelIndex: number | null;
 
@@ -22,14 +22,14 @@
 
   $: codeBlock = generateRoomCodeBlock(roomCode, roomName, roomType, roomAlternateNames, polygonPoints);
 
-  function generateRoomCodeBlock(codeVal: string, nameVal: string, typeVal: ROOM_TYPES, altNamesVal: string[], polygonPtsVal: [number, number][]): string {
+  function generateRoomCodeBlock(codeVal: string, nameVal: string, typeVal: RoomType, altNamesVal: string[], polygonPtsVal: [number, number][]): string {
     const formattedAlts = altNamesVal.length > 0 ? `[${altNamesVal.map((n) => `"${n}"`).join(", ")}]` : "[]";
     const formattedPolygon = polygonPtsVal.length > 0 ? `[\n${polygonPtsVal.map((p) => `      [${p[0]},${p[1]}]`).join(",\n")}\n    ]` : "[]";
 
     return `  {
     code: "${codeVal || "UNKNOWN-CODE"}",
     name: "${nameVal || "Unnamed Room"}",
-    roomType: ROOM_TYPES.${Object.keys(ROOM_TYPES).find((k) => ROOM_TYPES[k as keyof typeof ROOM_TYPES] === typeVal) || "ACADEMIC"},
+    roomType: RoomType.${Object.keys(RoomType).find((k) => RoomType[k as keyof typeof RoomType] === typeVal) || "ACADEMIC"},
     alternateNames: ${formattedAlts},
     polygon: ${formattedPolygon},
   },`;
@@ -89,7 +89,7 @@
     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer text-gray-900"
     bind:value={roomType}
   >
-    {#each Object.values(ROOM_TYPES) as rt}
+    {#each Object.values(RoomType) as rt}
       <option value={rt}>{rt}</option>
     {/each}
   </select>

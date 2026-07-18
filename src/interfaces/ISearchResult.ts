@@ -1,4 +1,4 @@
-import type { TYPES, ROOM_TYPES } from "../data/constants";
+import type { BuildingType, RoomType } from "../data/constants";
 
 export type SearchResultKind = "building" | "room";
 
@@ -10,7 +10,7 @@ type BaseSearchResult = {
 
 export type IBuildingSearchResult = BaseSearchResult & {
   kind: "building";
-  buildingType: TYPES;
+  buildingType: BuildingType;
   buildingCode: string;
 };
 
@@ -20,7 +20,7 @@ export type IRoomSearchResult = BaseSearchResult & {
   roomId: string;
   roomName: string;
   roomCode: string;
-  roomType: ROOM_TYPES;
+  roomType: RoomType;
 };
 
 export type ISearchResult = IBuildingSearchResult | IRoomSearchResult;

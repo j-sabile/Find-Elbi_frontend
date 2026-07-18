@@ -1,15 +1,13 @@
 <script lang="ts">
-  import { COLLEGES, TYPES, type IFloor } from "../../data/constants";
+  import { COLLEGES, type IFloor, BUILDING_TYPES } from "../../data/constants";
   import { drawBuildingStore, selectedSection } from "../../stores/drawBuilding";
   import { get } from "svelte/store";
   import FloorCreator from "./FloorCreator.svelte";
 
-  export let centroid: [number, number];
   export let polygonPoints: [number, number][];
-  export let generatedId: string = "";
 
   let name = "";
-  let type = TYPES.ACADEMIC;
+  let type = BUILDING_TYPES.ACADEMIC;
   let college = COLLEGES.CAS;
   let alternateNamesStr = "";
   let address = "";
@@ -21,33 +19,6 @@
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-
-  $: codeBlock = generateCodeBlock(generatedId, name, type, college, alternateNames, address, centroid, polygonPoints);
-
-  function generateCodeBlock(
-    idVal: string,
-    nameVal: string,
-    typeVal: TYPES,
-    collegeVal: COLLEGES,
-    altNamesVal: string[],
-    addressVal: string,
-    centroidVal: [number, number],
-    polygonPtsVal: [number, number][],
-  ): string {
-    const isAcademic = typeVal === TYPES.ACADEMIC;
-    const formattedAlts = altNamesVal.length > 0 ? `[${altNamesVal.map((n) => `"${n}"`).join(", ")}]` : "[]";
-    const formattedPolygon = polygonPtsVal.length > 0 ? `[\n${polygonPtsVal.map((p) => `      [${p[0]}, ${p[1]}]`).join(",\n")}\n    ]` : "[]";
-
-    return `  {
-    id: "${idVal}",
-    name: "${nameVal || "Unnamed Building"}",
-    type: TYPES.${Object.keys(TYPES).find((k) => TYPES[k as keyof typeof TYPES] === typeVal) || "ACADEMIC"},
-${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find((k) => COLLEGES[k as keyof typeof COLLEGES] === collegeVal) || "CAS"},\n` : ""}    alternateNames: ${formattedAlts},
-    address: "${addressVal || "Unknown Road"}",
-    marker: [${centroidVal[0]}, ${centroidVal[1]}],
-    polygon: ${formattedPolygon},
-  },`;
-  }
 
   function handleSave() {
     console.log(`calling drawBuildingStore.updateBuilding()`);
@@ -81,12 +52,12 @@ ${isAcademic ? `    college: COLLEGES.${Object.keys(COLLEGES).find((k) => COLLEG
   <!-- svelte-ignore a11y-label-has-associated-control -->
   <label class="text-xs text-gray-500 font-medium">Building Type</label>
   <select class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 outline-none" bind:value={type} disabled={isBuildingSaved}>
-    {#each Object.values(TYPES) as t}
+    {#each Object.values(BUILDING_TYPES) as t}
       <option value={t}>{t}</option>
     {/each}
   </select>
 
-  {#if type === TYPES.ACADEMIC}
+  {#if type === BUILDING_TYPES.ACADEMIC}
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="text-xs text-gray-500 font-medium">College</label>
     <select class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 outline-none" bind:value={college} disabled={isBuildingSaved}>

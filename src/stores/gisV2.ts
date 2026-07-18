@@ -1,5 +1,5 @@
 import { writable, get } from "svelte/store";
-import { TYPES } from "../data/constants";
+import { BUILDING_TYPES, type BuildingType } from "../data/constants";
 import type { IBuilding } from "../interfaces/IBuilding";
 import { dataStoreV2 } from "./dataV2";
 import { getHaversineDistance, findNearestBuilding } from "../utils/gisConvert";
@@ -11,7 +11,7 @@ export type GisToolType = "none" | "buffer" | "nearest" | "measure_dist" | "meas
 export interface GisState {
   activeTool: GisToolType;
   bufferRadius: number;
-  nearestTargetType: TYPES | null;
+  nearestTargetType: BuildingType | null;
   draftPoints: LatLng[];
   measurementResult: { distance?: number; area?: number } | null;
   bufferResults: { buildingId: string; distance: number }[];
@@ -21,7 +21,7 @@ export interface GisState {
 const defaultState: GisState = {
   activeTool: "none",
   bufferRadius: 100,
-  nearestTargetType: TYPES.ACADEMIC,
+  nearestTargetType: BUILDING_TYPES.ACADEMIC,
   draftPoints: [],
   measurementResult: null,
   bufferResults: [],
@@ -54,7 +54,7 @@ function createGisStoreV2() {
         nearestResult: null,
       })),
     setBufferRadius: (radius: number) => update((s) => ({ ...s, bufferRadius: radius })),
-    setNearestTargetType: (type: TYPES | null) => update((s) => ({ ...s, nearestTargetType: type })),
+    setNearestTargetType: (type: BuildingType | null) => update((s) => ({ ...s, nearestTargetType: type })),
     addPoint: (point: LatLng) =>
       update((s) => ({
         ...s,

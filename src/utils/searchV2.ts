@@ -2,7 +2,7 @@
 // import buildings from "../data/buildings";
 // import type { IBuilding } from "../interfaces/IBuilding";
 // import type { ISearchResult } from "../interfaces/ISearchResult";
-// import { TYPES, ROOM_TYPES } from "../data/constants";
+// import { BuildingType, RoomType } from "../data/constants";
 
 // const THRESHOLD = 0.3;
 
@@ -11,7 +11,7 @@
 //   name: string;
 //   code: string;
 //   alternateNames: string[];
-//   type: ROOM_TYPES;
+//   type: RoomType;
 //   floorLevelIndex: number;
 //   building: BuildingFuse;
 // }
@@ -20,7 +20,7 @@
 //   kind: "building";
 //   name: string;
 //   alternateNames: string[];
-//   type: TYPES;
+//   type: BuildingType;
 // }
 
 // function flattenRoomsList(buildingsList: IBuilding[]): RoomFuse[] {

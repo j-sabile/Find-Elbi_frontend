@@ -1,5 +1,5 @@
 import { derived, writable } from "svelte/store";
-import { TYPES, type FLOORS } from "../data/constants";
+import { BUILDING_TYPES, type FLOORS } from "../data/constants";
 import type { IRoom } from "../interfaces/IRoom";
 import { generateNextId } from "../utils/idGenerator";
 import type { IAcadBuilding, IBuilding, IRegBuilding, Section } from "../interfaces/IBuilding";
@@ -9,12 +9,11 @@ import { getBuildingLabelPoint } from "../utils/buildingGenerator";
 // Define the 3 distinct drawing procedures
 export type MapProcedure = "idle" | "generate_sections" | "trace_perimeter" | "trace_rooms";
 
-interface MapState {
+export interface MapState {
   procedure: MapProcedure;
   sections: Section[]; // Array of polygons
   perimeter: [number, number][]; // The main building outline
   draftPoints: [number, number][]; // Points currently being drawn on the map
-  // floors: IFloor[];
   activeFloorLevel: FLOORS; // Keeps track of which floor rooms are being added to
   selectedSectionId: string | null;
   showAllSectionPoints: boolean;
@@ -26,7 +25,6 @@ const initialState: MapState = {
   sections: [],
   perimeter: [],
   draftPoints: [],
-  // floors: [],
   activeFloorLevel: null as unknown as FLOORS, // Should be set when tracing rooms
   selectedSectionId: null,
   showAllSectionPoints: false,
@@ -116,7 +114,7 @@ function createBuildingMapStore() {
       update((state) => ({
         ...state,
         building:
-          building.type === TYPES.ACADEMIC
+          building.type === BUILDING_TYPES.ACADEMIC
             ? {
                 id: generateNextId(buildings, ""),
                 marker: getBuildingLabelPoint(building.polygon),
@@ -126,7 +124,7 @@ function createBuildingMapStore() {
                 name: building.name,
                 address: building.address,
                 alternateNames: building.alternateNames,
-                type: TYPES.ACADEMIC,
+                type: building.type,
                 college: building.college,
               }
             : {

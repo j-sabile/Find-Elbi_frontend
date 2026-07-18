@@ -1,31 +1,51 @@
 import L from "leaflet";
 import type { IRoom } from "../interfaces/IRoom";
 
-export enum TYPES {
-  DORMITORY = "Dormitory",
-  ACADEMIC = "Academic Building",
-  PARK = "Park",
-  COMMUNITY = "Community Commons",
-  LANDMARK = "Landmark",
-  SHOP = "Shop",
-  GYM = "Gymnasium",
-  LIBRARY = "Library",
-  ADMINOFFICE = "Administrative Office",
-  CLINIC = "Clinic",
-  BANK = "Bank",
-  SUPPORT = "Support Facility",
-  LAUNDRY = "Laundry Service",
-}
+export const BUILDING_TYPES = {
+  DORMITORY: "Dormitory",
+  ACADEMIC: "Academic Building",
+  PARK: "Park",
+  COMMUNITY: "Community Commons",
+  LANDMARK: "Landmark",
+  SHOP: "Shop",
+  GYM: "Gymnasium",
+  LIBRARY: "Library",
+  ADMINOFFICE: "Administrative Office",
+  CLINIC: "Clinic",
+  BANK: "Bank",
+  SUPPORT: "Support Facility",
+  LAUNDRY: "Laundry Service",
+} as const;
 
-export enum ROOM_TYPES {
-  ACADEMIC = "Academic Room",
-  FACULTY = "Faculty Room",
-  ADMIN = "Administrative Room",
-  LABORATORY = "Laboratory",
-  LECTURE_HALL = "Lecture Hall",
-  DORM = "Dorm Room",
-  CR = "Comfort Room CR",
-}
+export type BuildingType = (typeof BUILDING_TYPES)[keyof typeof BUILDING_TYPES];
+
+export const RoomType = {
+  ACADEMIC: "Academic Room",
+  FACULTY: "Faculty Room",
+  ADMIN: "Administrative Room",
+  LABORATORY: "Laboratory",
+  LECTURE_HALL: "Lecture Hall",
+  DORM: "Dorm Room",
+  CR: "Comfort Room CR",
+} as const;
+
+export type RoomType = (typeof RoomType)[keyof typeof RoomType];
+
+export const COLLEGES = {
+  CAFS: "College of Agriculture and Food Sciences",
+  CAS: "College of Arts and Sciences",
+  CDC: "College of Development Communication",
+  CEM: "College of Economics and Management",
+  CEAT: "College of Engineering and Agro-Industrial Technology",
+  CFNR: "College of Forestry and Natural Resources",
+  CHE: "College of Human Ecology",
+  CPAD: "College of Public Affairs and Development",
+  CVM: "College of Veterinary Medicine",
+  GS: "Graduate School",
+  SESM: "School of Environmental Science and Management",
+} as const;
+
+export type College = (typeof COLLEGES)[keyof typeof COLLEGES];
 
 export enum FLOORS {
   NONE = "",
@@ -36,20 +56,6 @@ export enum FLOORS {
   F4 = "F4",
 }
 export type IFloor = { levelIndex: number; label: string; rooms: IRoom[] };
-
-export enum COLLEGES {
-  CAFS = "College of Agriculture and Food Sciences",
-  CAS = "College of Arts and Sciences",
-  CDC = "College of Development Communication",
-  CEM = "College of Economics and Management",
-  CEAT = "College of Engineering and Agro-Industrial Technology",
-  CFNR = "College of Forestry and Natural Resources",
-  CHE = "College of Human Ecology",
-  CPAD = "College of Public Affairs and Development",
-  CVM = "College of Veterinary Medicine",
-  GS = "Graduate School",
-  SESM = "School of Environmental Science and Management",
-}
 
 export const DEFAULT_MAP_SETTINGS = {
   minZoom: 13,

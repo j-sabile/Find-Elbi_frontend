@@ -2,7 +2,7 @@
   import { activeSelectionStore, navigationStoreV2 } from "../stores/navigationV2";
   import type { IBuilding } from "../interfaces/IBuilding";
   import BuildingTypeIconV2 from "./BuildingTypeIconV2.svelte";
-  import { FLOORS, ROOM_TYPES } from "../data/constants";
+  import { FLOORS, RoomType } from "../data/constants";
   import { X } from "lucide-svelte";
   import { fly } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
@@ -24,8 +24,8 @@
     navigationStoreV2.selectFloor(floorLevelIndex);
   }
 
-  function roomTypeLabel(roomType: ROOM_TYPES | undefined): string {
-    return roomType ?? ROOM_TYPES.ACADEMIC;
+  function roomTypeLabel(roomType: RoomType | undefined): string {
+    return roomType ?? RoomType.ACADEMIC;
   }
 </script>
 
