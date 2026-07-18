@@ -3,8 +3,9 @@
   import { navigationStoreV2 } from "../stores/navigationV2";
   import { dataStoreV2 } from "../stores/dataV2";
   import type { ISearchResult } from "../interfaces/ISearchResult";
-  import { searchV2 } from "../utils/searchV2";
+  // import { searchV2 } from "../utils/searchV2";
   import SearchResultItemV2 from "./SearchResultItemV2.svelte";
+  import search from "../services/search/search";
 
   const SHORTCUT_KEY: string = "/";
   const DEBOUNCE_MS = 250;
@@ -19,7 +20,7 @@
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
   function runSearch(value: string) {
-    results = searchV2(value, $dataStoreV2.buildings);
+    results = search(value);
     open = value.trim().length > 0 && results.length > 0;
     activeIndex = -1;
   }
@@ -31,14 +32,14 @@
 
   function selectResult(result: ISearchResult) {
     navigationStoreV2.selectSearchResult(result);
-    query = result.name;
+    query = result.buildingName;
     open = false;
     activeIndex = -1;
     inputEl?.blur();
   }
 
   // When a building/room is selected, the search bar shows a back icon instead.
-  $: selected = $navigationStoreV2.selectedBuilding !== null;
+  $: selected = $navigationStoreV2.selectedBuildingId != null;
 
   // Clear the search input when the selected building/room is unselected
   // (via the back button in this bar or the close button in the info card).

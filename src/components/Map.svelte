@@ -14,6 +14,7 @@
   import MeasurementTool from "./map-tools/MeasurementTool.svelte";
   import NearestTool from "./map-tools/NearestTool.svelte";
   import BuildingDrawTool from "./map-tools/BuildingDrawTool.svelte";
+  import DrawBuildingTool from "./map-tools/DrawBuildingTool.svelte";
 
   // ─── Basemap Management ───
   let currentBasemap: TileLayer | undefined;
@@ -64,6 +65,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <div class="map {classes}" use:createMap>
+  <DrawBuildingTool />
   {#if $mapInstance}
     {#if $mapSettings.showGrid}
       <GridOverlay />
@@ -79,8 +81,8 @@
       <MeasurementTool />
     {:else if $gisStoreV2.activeTool === "nearest"}
       <NearestTool />
-    {:else if $gisStoreV2.activeTool === "draw_building"}
-      <BuildingDrawTool />
+      <!-- {:else if $gisStoreV2.activeTool === "draw_building"}
+      <BuildingDrawTool /> -->
     {/if}
   {/if}
 </div>

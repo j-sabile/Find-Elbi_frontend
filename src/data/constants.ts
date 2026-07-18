@@ -1,4 +1,5 @@
 import L from "leaflet";
+import type { IRoom } from "../interfaces/IRoom";
 
 export enum TYPES {
   DORMITORY = "Dormitory",
@@ -34,6 +35,7 @@ export enum FLOORS {
   F3 = "F3",
   F4 = "F4",
 }
+export type IFloor = { levelIndex: number; label: string; rooms: IRoom[] };
 
 export enum COLLEGES {
   CAFS = "College of Agriculture and Food Sciences",

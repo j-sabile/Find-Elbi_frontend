@@ -1,61 +1,28 @@
-import { writable, get, derived } from "svelte/store";
-import { FLOORS } from "../data/constants";
-import type { IBuilding } from "../interfaces/IBuilding";
-import type { IFloor } from "../interfaces/IFloor";
-import type { IRoom } from "../interfaces/IRoom";
+import { writable, derived } from "svelte/store";
 import type { ISearchResult } from "../interfaces/ISearchResult";
 import { dataStoreV2 } from "./dataV2";
 import { mapInstance } from "./mapV2";
 import L from "leaflet";
-import { searchV2 } from "../utils/searchV2";
+import type { IBuilding } from "../interfaces/IBuilding";
+import type { IFloor } from "../data/constants";
+import type { IRoom } from "../interfaces/IRoom";
+import search from "../services/search/search";
 
 export interface NavigationState {
-  // status: STACKSTATUS;
-  // history: IMapStatus[];
   searchInput: string;
   searchResults: ISearchResult[];
-  selectedBuilding: IBuilding | null;
-  selectedFloor: IFloor | null;
-  selectedRoom: IRoom | null;
+  selectedBuildingId: string | null;
+  selectedFloorIndex: number | null;
+  selectedRoomId: string | null;
 }
 
 const defaultState: NavigationState = {
-  // status: STACKSTATUS.HOME,
-  // history: [],
   searchInput: "",
   searchResults: [],
-  selectedBuilding: null,
-  selectedFloor: null,
-  selectedRoom: null,
+  selectedBuildingId: null,
+  selectedFloorIndex: null,
+  selectedRoomId: null,
 };
-
-// function pushHistory(current: NavigationState): IMapStatus[] {
-//   const snap: IMapStatus = {
-//     // status: current.status,
-//     searchInput: current.searchInput,
-//     searchResults: current.searchResults,
-//     selectedBuilding: current.selectedBuilding || undefined,
-//     selectedFloor: current.selectedFloor || undefined,
-//     selectedRoom: current.selectedRoom || undefined,
-//   };
-
-//   let nextHistory = [...current.history];
-//   if (snap.status === STACKSTATUS.HOME) {
-//     nextHistory = [mapStatusDefault];
-//   } else if (snap.status === STACKSTATUS.SEARCH) {
-//     const homeSnap = nextHistory.find((h) => h.status === STACKSTATUS.HOME) || mapStatusDefault;
-//     nextHistory = [homeSnap, snap];
-//   } else if (snap.status === STACKSTATUS.BUILDING) {
-//     if (nextHistory.length > 0 && nextHistory[nextHistory.length - 1].status === STACKSTATUS.BUILDING) {
-//       nextHistory[nextHistory.length - 1] = snap;
-//     } else {
-//       nextHistory.push(snap);
-//     }
-//   } else {
-//     nextHistory.push(snap);
-//   }
-//   return nextHistory;
-// }
 
 function createNavigationStoreV2() {
   const { subscribe, set, update } = writable<NavigationState>({ ...defaultState });
@@ -63,128 +30,77 @@ function createNavigationStoreV2() {
   return {
     subscribe,
     setSearchInput: (query: string) => update((s) => ({ ...s, searchInput: query })),
-    executeSearch: () => {
-      update((s) => {
-        const buildingsList = get(dataStoreV2).buildings;
-        const results = searchV2(s.searchInput, buildingsList);
-        // const nextHistory = pushHistory(s);
-        return {
-          ...s,
-          // status: STACKSTATUS.SEARCH,
-          searchResults: results,
-          // history: nextHistory,?
-        };
-      });
+
+    // Note: searchV2 still needs dataStoreV2, but we can pass it dynamically where we call executeSearch
+    // or just import the store's current value for the search function.
+    executeSearch: (buildingsList: any[]) => {
+      update((s) => ({
+        ...s,
+        searchResults: search(s.searchInput),
+      }));
     },
-    selectBuilding: (buildingId: string) => {
-      update((s) => {
-        const buildingsList = get(dataStoreV2).buildings;
-        const building = buildingsList.find((b) => b.id === buildingId) || null;
-        if (!building) return s;
-        // const nextHistory = pushHistory(s);
-        return {
-          ...s,
-          // status: STACKSTATUS.BUILDING,
-          selectedBuilding: building,
-          selectedFloor: null,
-          selectedRoom: null,
-          searchInput: building.name,
-          // history: nextHistory,
-        };
-      });
+
+    selectBuilding: (buildingId: string, buildingName: string = "") => {
+      update((s) => ({
+        ...s,
+        selectedBuildingId: buildingId,
+        selectedFloorIndex: null,
+        selectedRoomCode: null,
+        searchInput: buildingName || s.searchInput,
+        searchResults: [],
+      }));
     },
-    selectFloor: (level: FLOORS) => {
-      update((s) => {
-        if (!s.selectedBuilding) return s;
-        const floor = s.selectedBuilding.floors?.find((f) => f.level === level) || null;
-        if (!floor) return s;
-        // const nextHistory = pushHistory(s);
-        return {
-          ...s,
-          // status: STACKSTATUS.FLOOR,
-          selectedFloor: floor,
-          selectedRoom: null,
-          // history: nextHistory,
-        };
-      });
+
+    selectFloor: (floorIndex: number) => {
+      update((s) => ({
+        ...s,
+        selectedFloorIndex: floorIndex,
+        selectedRoomCode: null,
+      }));
     },
+
     selectRoom: (roomCode: string) => {
-      update((s) => {
-        if (!s.selectedFloor) return s;
-        const room = s.selectedFloor.rooms.find((r) => r.code === roomCode) || null;
-        if (!room) return s;
-        // const nextHistory = pushHistory(s);
-        return {
-          ...s,
-          // status: STACKSTATUS.ROOM,
-          selectedRoom: room,
-          // history: nextHistory,
-        };
-      });
+      update((s) => ({ ...s, selectedRoomCode: roomCode }));
     },
+
     selectSearchResult: (result: ISearchResult) => {
+      console.log("selectSearchResult: (result: ISearchResult)", result);
+
       update((s) => {
-        // const nextHistory = pushHistory(s);
-        if (result.kind === "building" && result.building) {
+        if (result.kind === "building" && result.buildingId) {
+          console.log("- building");
+
           return {
             ...s,
-            // status: STACKSTATUS.BUILDING,
-            selectedBuilding: result.building,
-            selectedFloor: null,
-            selectedRoom: null,
-            searchInput: result.name,
-            // history: nextHistory,
-          };
-        } else if (result.kind === "room" && result.building && result.floorLevel) {
-          const b = result.building;
-          const f = b.floors?.find((fl) => fl.level === result.floorLevel) || null;
-          const r = f?.rooms.find((rm) => rm.name === result.name) || null;
-          return {
-            ...s,
-            // status: STACKSTATUS.ROOM,
-            selectedBuilding: b,
-            selectedFloor: f,
-            selectedRoom: r,
-            searchInput: result.name,
-            // history: nextHistory,
+            selectedBuildingId: result.buildingId,
+            selectedFloorIndex: null,
+            selectedRoomCode: null,
+            searchInput: result.buildingName,
+            searchResults: [],
           };
         }
+        // else if (result.kind === "room" && result.room && result.floorLevel !== undefined) {
+        //   return {
+        //     ...s,
+        //     selectedBuildingId: result.building.id,
+        //     selectedFloorIndex: result.floorLevel,
+        //     // selectedRoomCode: result. || null, // Assuming ISearchResult has a room code
+        //     searchInput: result.name,
+        //     searchResults: [],
+        //   };
+        // }
         return s;
       });
     },
+
     clearFloorSelection: () => {
-      update((s) => {
-        // if (s.status === STACKSTATUS.FLOOR || s.status === STACKSTATUS.ROOM) {
-        // const nextHistory = pushHistory(s);
-        return {
-          ...s,
-          // status: STACKSTATUS.BUILDING,
-          selectedFloor: null,
-          selectedRoom: null,
-          // history: nextHistory,
-        };
-        // }
-        // return s;
-      });
+      update((s) => ({
+        ...s,
+        selectedFloorIndex: null,
+        selectedRoomCode: null,
+      }));
     },
-    // goBack: () => {
-    //   update((s) => {
-    //     // if (s.history.length === 0) return s;
-    //     const nextHistory = [...s.history];
-    //     const prev = nextHistory.pop();
-    //     if (!prev) return s;
-    //     return {
-    //       ...s,
-    //       status: prev.status,
-    //       searchInput: prev.searchInput,
-    //       searchResults: prev.searchResults,
-    //       selectedBuilding: prev.selectedBuilding || null,
-    //       selectedFloor: prev.selectedFloor || null,
-    //       selectedRoom: prev.selectedRoom || null,
-    //       history: nextHistory,
-    //     };
-    //   });
-    // },
+
     closeAndReset: () => {
       set({ ...defaultState });
     },
@@ -192,6 +108,19 @@ function createNavigationStoreV2() {
 }
 
 export const navigationStoreV2 = createNavigationStoreV2();
+
+export const activeSelectionStore = derived([navigationStoreV2, dataStoreV2], ([$nav, $data]) => {
+  console.log("const activeSelectionStore = derived([navigationStoreV2, dataStoreV2],");
+
+  const building: IBuilding | null = $nav.selectedBuildingId ? $data.buildings.find((b) => b.id === $nav.selectedBuildingId) || null : null;
+  console.log("building", building);
+
+  const floor: IFloor | null = building && $nav.selectedFloorIndex !== null ? building.floors?.find((f) => f.levelIndex === $nav.selectedFloorIndex) || null : null;
+
+  const room: IRoom | null = floor && $nav.selectedRoomId ? floor.rooms.find((r) => r.id === $nav.selectedRoomId) || null : null;
+
+  return { building, floor, room };
+});
 
 // --- REACTIVE LEAFLET DRAWING SUBSCRIPTION ---
 let selectedBuildingPolygon: L.Polygon | null = null;
@@ -209,33 +138,40 @@ function clearMapDrawings(map: L.Map) {
   searchResultMarkers = [];
 }
 
-let lastSelectedBuildingId: string | null = null;
-let lastSelectedFloorLevel: string | null = null;
-// let lastStatus: STACKSTATUS | null = null;
-
-derived([navigationStoreV2, mapInstance], ([$nav, $mapInstance]) => ({ nav: $nav, map: $mapInstance })).subscribe(({ nav, map }) => {
+derived([navigationStoreV2, dataStoreV2, mapInstance], ([$nav, $data, $mapInstance]) => ({
+  nav: $nav,
+  data: $data,
+  map: $mapInstance,
+})).subscribe(({ nav, data, map }) => {
   if (!map) return;
 
   clearMapDrawings(map);
 
-  // 1. Draw selected building outline if no floor selected
-  if (nav.selectedBuilding) {
-    selectedBuildingPolygon = L.polygon(nav.selectedBuilding.polygon, {
+  const activeBuilding = nav.selectedBuildingId ? (data.buildings.find((b) => b.id === nav.selectedBuildingId) ?? null) : null;
+  const activeFloor = activeBuilding && nav.selectedFloorIndex !== null ? (activeBuilding.floors?.find((f) => f.levelIndex === nav.selectedFloorIndex) ?? null) : null;
+
+  // 1. Draw selected building outline
+  if (activeBuilding) {
+    console.log("if (activeBuilding), L.polygon(activeBuilding.polygon).addTo(map) ");
+
+    selectedBuildingPolygon = L.polygon(activeBuilding.polygon, {
       color: "#2563eb",
       weight: 3,
       fillColor: "#2563eb",
       fillOpacity: 0.1,
     }).addTo(map);
 
-    if (nav.selectedBuilding.id !== lastSelectedBuildingId) {
-      map.fitBounds(nav.selectedBuilding.polygon, { padding: [50, 50], maxZoom: 18 });
+    // Only zoom if no specific floor is selected
+    if (!activeFloor) {
+      map.fitBounds(activeBuilding.polygon, { padding: [50, 50], maxZoom: 18 });
     }
   }
 
   // 2. Draw floor rooms
-  if (nav.selectedFloor) {
-    floorRoomPolygons = nav.selectedFloor.rooms.map((room) => {
-      const isSelectedRoom = nav.selectedRoom && nav.selectedRoom.code === room.code;
+  if (activeFloor && activeFloor.rooms) {
+    floorRoomPolygons = activeFloor.rooms.map((room) => {
+      const isSelectedRoom = nav.selectedRoomId === room.id;
+
       return L.polygon(room.polygon, {
         color: isSelectedRoom ? "#ef4444" : "#028A0F",
         fillColor: isSelectedRoom ? "#ef4444" : "#028A0F",
@@ -245,25 +181,24 @@ derived([navigationStoreV2, mapInstance], ([$nav, $mapInstance]) => ({ nav: $nav
         .bindTooltip(room.name)
         .on("click", (e) => {
           L.DomEvent.stopPropagation(e);
-          navigationStoreV2.selectRoom(room.code);
+          navigationStoreV2.selectRoom(room.id);
         })
         .addTo(map);
     });
 
-    if (nav.selectedFloor.level !== lastSelectedFloorLevel) {
-      const allRoomCoords = nav.selectedFloor.rooms.flatMap((r) => r.polygon);
-      if (allRoomCoords.length > 0) {
-        map.fitBounds(allRoomCoords, { padding: [50, 50], maxZoom: 19 });
-      }
+    const allRoomCoords = activeFloor.rooms.flatMap((r) => r.polygon);
+    if (allRoomCoords.length > 0) {
+      map.fitBounds(allRoomCoords, { padding: [50, 50], maxZoom: 19 });
     }
   }
 
   // 3. Draw search markers
-  // if (nav.status === STACKSTATUS.SEARCH && nav.searchResults.length > 0) {
+  // if (!activeBuilding && nav.searchResults.length > 0) {
   //   searchResultMarkers = nav.searchResults
   //     .map((res) => {
-  //       const markerCoords = res.building ? res.building.marker : null;
+  //       const markerCoords = res.building?.marker;
   //       if (!markerCoords) return null;
+
   //       return L.marker(markerCoords)
   //         .bindTooltip(res.name)
   //         .on("click", (e) => {
@@ -274,15 +209,9 @@ derived([navigationStoreV2, mapInstance], ([$nav, $mapInstance]) => ({ nav: $nav
   //     })
   //     .filter(Boolean) as L.Marker[];
 
-  // if (nav.status !== lastStatus) {
-  //   const markers = nav.searchResults.map((r) => r.building?.marker).filter(Boolean) as [number, number][];
-  //   if (markers.length > 0) {
-  //     map.fitBounds(markers, { padding: [50, 50], maxZoom: 18 });
+  //   const markerCoordsArray = nav.searchResults.map((r) => r.building?.marker).filter(Boolean) as [number, number][];
+  //   if (markerCoordsArray.length > 0) {
+  //     map.fitBounds(markerCoordsArray, { padding: [50, 50], maxZoom: 18 });
   //   }
   // }
-  // }
-
-  lastSelectedBuildingId = nav.selectedBuilding ? nav.selectedBuilding.id : null;
-  lastSelectedFloorLevel = nav.selectedFloor ? nav.selectedFloor.level : null;
-  // lastStatus = nav.status;
 });

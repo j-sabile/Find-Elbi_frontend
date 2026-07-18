@@ -1,6 +1,5 @@
 <script lang="ts">
   import { TYPES, ROOM_TYPES } from "../data/constants";
-  import type { SearchResultKind } from "../interfaces/ISearchResult";
   import {
     GraduationCap,
     House,
@@ -20,13 +19,11 @@
     FlaskConical,
     Presentation,
     Bed,
+    Bath,
   } from "lucide-svelte";
 
-  export let type: TYPES;
-  export let kind: SearchResultKind = "building";
-  export let roomType: ROOM_TYPES | undefined = undefined;
+  export let type: TYPES | ROOM_TYPES;
 
-  // Most appropriate Lucide icon per building type.
   const ICONS: Record<string, any> = {
     [TYPES.ACADEMIC]: GraduationCap,
     [TYPES.DORMITORY]: House,
@@ -41,26 +38,15 @@
     [TYPES.BANK]: Banknote,
     [TYPES.SUPPORT]: Wrench,
     [TYPES.LAUNDRY]: WashingMachine,
-  };
 
-  // Distinct Lucide icon per room type.
-  const ROOM_ICONS: Record<string, any> = {
     [ROOM_TYPES.ACADEMIC]: BookOpen,
     [ROOM_TYPES.FACULTY]: User,
     [ROOM_TYPES.ADMIN]: Briefcase,
     [ROOM_TYPES.LABORATORY]: FlaskConical,
     [ROOM_TYPES.LECTURE_HALL]: Presentation,
     [ROOM_TYPES.DORM]: Bed,
+    [ROOM_TYPES.CR]: Bath,
   };
-
-  $: Icon =
-    kind === "room"
-      ? ROOM_ICONS[roomType ?? ""] ?? BookOpen
-      : ICONS[type] ?? GraduationCap;
 </script>
 
-<svelte:component
-  this={Icon}
-  class="w-5 h-5 shrink-0 text-blue-600"
-  strokeWidth={1.8}
-/>
+<svelte:component this={ICONS[type]} class="w-5 h-5 shrink-0 text-blue-600" strokeWidth={1.8} />

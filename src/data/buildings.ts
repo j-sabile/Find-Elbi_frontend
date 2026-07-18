@@ -23,6 +23,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["Men's Dormitory", "MRH", "Mens"],
     address: "Jose B Juliano Ave",
     marker: [14.16103, 121.24078],
+    sections: [],
     polygon: [
       [14.16173, 121.24057],
       [14.16137, 121.24077],
@@ -52,6 +53,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["F-Park"],
     address: "Jose B Juliano Ave",
     marker: [14.16225, 121.24113],
+    sections: [],
     polygon: [
       [14.1636, 121.24055],
       [14.16305, 121.24086],
@@ -68,6 +70,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["DL"],
     address: "Harold Cuzner Royal Palm Ave",
     marker: [14.164, 121.24012],
+    sections: [],
     polygon: [
       [14.16428, 121.24013],
       [14.16381, 121.24037],
@@ -82,6 +85,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["SU"],
     address: "Mariano M. Mondenedo Ave",
     marker: [14.16332, 121.24136],
+    sections: [],
     polygon: [
       [14.16365, 121.24107],
       [14.16341, 121.24144],
@@ -98,6 +102,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["F-Tree"],
     address: "Freedom Park",
     marker: [14.15981, 121.2426],
+    sections: [],
     polygon: [
       [14.15984, 121.24258],
       [14.15981, 121.24262],
@@ -112,33 +117,50 @@ const buildings: IBuilding[] = [
     alternateNames: ["PhySci"],
     address: "Harold Cuzner Royal Palm Avenue",
     marker: [14.16425, 121.24204],
+    sections: [],
     polygon: [
-      [14.16478, 121.24228],
-      [14.16465, 121.24235],
-      [14.16459, 121.24219],
-      [14.1643, 121.24232],
-      [14.16427, 121.24225],
-      [14.16389, 121.24241],
-      [14.16379, 121.24217],
-      [14.16394, 121.24207],
-      [14.16382, 121.24179],
-      [14.16422, 121.24161],
-      [14.16429, 121.24179],
-      [14.16453, 121.24169],
+      [14.164596620762625, 121.24184591653459],
+      [14.164796871996666, 121.24229438188043],
+      [14.164668829276057, 121.24235519847522],
+      [14.164504987419246, 121.24198827218044],
+      [14.164462306508971, 121.24200854434882],
+      [14.164560611689964, 121.24222870007092],
+      [14.164304526192584, 121.24235033297384],
+      [14.164206221011595, 121.24213017719909],
+      [14.16417130025721, 121.24214676347559],
+      [14.16422045287279, 121.24225684134272],
+      [14.163906166032028, 121.24240611763399],
+      [14.163820604039206, 121.24221450058047],
+      [14.164014608272804, 121.24212235480523],
+      [14.163850765734567, 121.24175542900213],
+      [14.163982688593324, 121.24169276983024],
+      [14.164146531131564, 121.24205969558811],
+      [14.164247413306708, 121.24201177966707],
+      [14.164083570768463, 121.24164485394377],
+      [14.164231013930415, 121.2415748229562],
+      [14.164397951779021, 121.24194078147413],
+      [14.164497286275484, 121.24189334902512],
+      [14.164429998108817, 121.24174567718757],
+      [14.164500473114812, 121.24171116638543],
+      [14.164566820417466, 121.24186014628613],
     ],
     floors: [
       {
-        level: FLOORS.BASEMENT,
+        levelIndex: -1,
+        label: "B",
         rooms: [],
       },
       {
-        level: FLOORS.F1,
+        levelIndex: 0,
+        label: "F1",
         rooms: [],
       },
       {
-        level: FLOORS.F2,
+        levelIndex: 1,
+        label: "F2",
         rooms: [
           {
+            id: "ICS-CR-F2-01",
             name: "Comfort Room",
             alternateNames: [],
             code: "ICS-CR-F2-01",
@@ -151,6 +173,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-PC1",
             name: "PC Lab 01",
             alternateNames: [],
             code: "ICS-PC1",
@@ -163,6 +186,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-PC2",
             name: "PC Lab 02",
             alternateNames: [],
             code: "ICS-PC2",
@@ -175,6 +199,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-PC3",
             name: "PC Lab 03",
             alternateNames: [],
             code: "ICS-PC3",
@@ -187,6 +212,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-PC4",
             name: "PC Lab 04",
             alternateNames: [],
             code: "ICS-PC4",
@@ -199,6 +225,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-PC5",
             name: "PC Lab 05",
             alternateNames: [],
             code: "ICS-PC5",
@@ -211,6 +238,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-HPC",
             name: "HPC",
             alternateNames: [],
             code: "ICS-HPC",
@@ -223,6 +251,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-MH",
             name: "Mega Hall",
             alternateNames: [],
             code: "ICS-MH",
@@ -235,6 +264,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-CR-F2-02",
             name: "Comfort Room",
             alternateNames: [],
             code: "ICS-CR-F2-02",
@@ -249,9 +279,11 @@ const buildings: IBuilding[] = [
         ],
       },
       {
-        level: FLOORS.F3,
+        levelIndex: 2,
+        label: "F3",
         rooms: [
           {
+            id: "ICS-CR-F3-01",
             name: "Comfort Room",
             alternateNames: [],
             code: "ICS-CR-F3-01",
@@ -264,6 +296,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-GS",
             name: "GS Room",
             alternateNames: [],
             code: "ICS-GS",
@@ -276,6 +309,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-PC6",
             name: "PC Lab 06",
             alternateNames: [],
             code: "ICS-PC6",
@@ -288,6 +322,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-PC7",
             name: "PC Lab 07",
             alternateNames: [],
             code: "ICS-PC7",
@@ -300,6 +335,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-PC8",
             name: "PC Lab 08",
             alternateNames: [],
             code: "ICS-PC8",
@@ -312,6 +348,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-PC9",
             name: "PC Lab 09",
             alternateNames: [],
             code: "ICS-PC9",
@@ -324,6 +361,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-SHR",
             name: "Switch Hub Room",
             alternateNames: [],
             code: "ICS-SHR",
@@ -336,6 +374,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-LH3",
             name: "Lecture Hall 3",
             alternateNames: [],
             code: "ICS-LH3",
@@ -348,6 +387,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-LH4",
             name: "Lecture Hall 4",
             alternateNames: [],
             code: "ICS-LH4",
@@ -360,6 +400,7 @@ const buildings: IBuilding[] = [
             ],
           },
           {
+            id: "ICS-CR-F3-02",
             name: "Comfort Room",
             alternateNames: [],
             code: "ICS-CR-F3-02",
@@ -374,7 +415,8 @@ const buildings: IBuilding[] = [
         ],
       },
       {
-        level: FLOORS.F4,
+        levelIndex: 3,
+        label: "F4",
         rooms: [],
       },
     ],
@@ -386,6 +428,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Jose R Velasco Ave",
     marker: [14.16793, 121.24184],
+    sections: [],
     polygon: [
       [14.16799, 121.24186],
       [14.16791, 121.2419],
@@ -400,6 +443,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Joseph C Madamba",
     marker: [14.15694, 121.24255],
+    sections: [],
     polygon: [
       [14.15731, 121.24257],
       [14.15681, 121.24289],
@@ -414,6 +458,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["Main Library"],
     address: "Pedro R Sandoval Ave",
     marker: [14.16554, 121.23901],
+    sections: [],
     polygon: [
       [14.16574, 121.23924],
       [14.16531, 121.23919],
@@ -428,6 +473,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["OUR", "Registrar"],
     address: "Pedro R Sandoval Ave",
     marker: [14.16559, 121.24136],
+    sections: [],
     polygon: [
       [14.16581, 121.24124],
       [14.16564, 121.24145],
@@ -443,6 +489,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["UHS"],
     address: "Domingo M Lantican Ave",
     marker: [14.16255, 121.23836],
+    sections: [],
     polygon: [
       [14.16282, 121.23836],
       [14.16237, 121.23868],
@@ -459,6 +506,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Victoria M Ela Ave",
     marker: [14.1671, 121.24383],
+    sections: [],
     polygon: [
       [14.16717, 121.24383],
       [14.16707, 121.24388],
@@ -473,6 +521,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["UPF"],
     address: "Andres P Aglibut Ave",
     marker: [14.16343, 121.24265],
+    sections: [],
     polygon: [
       [14.16351, 121.24275],
       [14.16333, 121.2427],
@@ -488,6 +537,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["CAS A2"],
     address: "Pedro R Sandoval Ave",
     marker: [14.16578, 121.24172],
+    sections: [],
     polygon: [
       [14.16605781912391, 121.24186567962171],
       [14.1659586695352, 121.24191999435426],
@@ -511,6 +561,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["CHE"],
     address: "Harold Cuzner Royal Palm Ave",
     marker: [14.16507, 121.24223],
+    sections: [],
     polygon: [
       [14.165345891608112, 121.2422686815262],
       [14.16527762446873, 121.24238133430482],
@@ -537,6 +588,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["UPLB Records Management Office"],
     address: "Victoria M Ela Ave",
     marker: [14.16658, 121.24333],
+    sections: [],
     polygon: [
       [14.16692708284394, 121.24335296452048],
       [14.166765843452508, 121.24360978603364],
@@ -551,6 +603,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["C Park"],
     address: "Victoria M Ela Ave",
     marker: [14.16681, 121.24297],
+    sections: [],
     polygon: [
       [14.167218028633453, 121.2429462745786],
       [14.167254437465772, 121.24301601201297],
@@ -572,6 +625,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["CDC Building"],
     address: "Victoria M Ela Ave",
     marker: [14.16704, 121.24258],
+    sections: [],
     polygon: [
       [14.16737309120914, 121.242617033422],
       [14.167226805763207, 121.24286849051715],
@@ -591,6 +645,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Jose M Capinpin Ave",
     marker: [14.16704, 121.24151],
+    sections: [],
     polygon: [
       [14.167336682395854, 121.24137282371522],
       [14.16729084629225, 121.24145831912759],
@@ -610,6 +665,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Fabian A Tiongson Ave",
     marker: [14.16726, 121.24164],
+    sections: [],
     polygon: [
       [14.167473540494077, 121.24144222587347],
       [14.167222904816681, 121.24187741428615],
@@ -627,6 +683,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["CEM Function Hall"],
     address: "Jose R Velasco Ave",
     marker: [14.16708, 121.24103],
+    sections: [],
     polygon: [
       [14.167378942625009, 121.24110426753762],
       [14.167144885872302, 121.24122228473425],
@@ -649,6 +706,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["CEM Library", "REDREC"],
     address: "Jose M Capinpin Ave",
     marker: [14.1661, 121.24212],
+    sections: [],
     polygon: [
       [14.166281149350285, 121.24217815697196],
       [14.166234337792645, 121.24224688857797],
@@ -668,6 +726,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["SESAM "],
     address: "Jose M Capinpin Ave",
     marker: [14.16627, 121.24155],
+    sections: [],
     polygon: [
       [14.166442714166022, 121.24154448509218],
       [14.166147541337319, 121.24170575290921],
@@ -687,6 +746,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Pedro R Sandoval Ave",
     marker: [14.16565, 121.24124],
+    sections: [],
     polygon: [
       [14.165896254034212, 121.24131850898269],
       [14.165844891265314, 121.24142780900003],
@@ -712,6 +772,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["IBS", "Institute of Biological Science"],
     address: "Andres P Aglibut Ave",
     marker: [14.16603, 121.24043],
+    sections: [],
     polygon: [
       [14.166477822802928, 121.23996734619142],
       [14.166386150239589, 121.24061610549691],
@@ -743,6 +804,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["IBS", "Institute of Biological Science"],
     address: "Andres P Aglibut Ave",
     marker: [14.16603, 121.24043],
+    sections: [],
     polygon: [
       [14.166477822802928, 121.23996734619142],
       [14.166386150239589, 121.24061610549691],
@@ -774,6 +836,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Jose R Velasco Ave",
     marker: [14.16665, 121.24021],
+    sections: [],
     polygon: [
       [14.166785348223685, 121.24004244804384],
       [14.166728134223463, 121.24045550823213],
@@ -792,6 +855,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["OVCRE"],
     address: "Jose R Velasco Ave",
     marker: [14.166968692990874, 121.24041259288788],
+    sections: [],
     polygon: [
       [14.167097424334676, 121.24051954597238],
       [14.166962841564432, 121.24057922512294],
@@ -807,6 +871,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["New Math Building"],
     address: "Victoria M Ela Ave",
     marker: [14.164765295186653, 121.24361917376521],
+    sections: [],
     polygon: [
       [14.165079974730398, 121.24359838664535],
       [14.164524083918742, 121.24381296336652],
@@ -822,6 +887,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["CAS"],
     address: "Harold Cuzner Royal Palm Ave",
     marker: [14.16485, 121.24126],
+    sections: [],
     polygon: [
       [14.165094928499519, 121.2412551417947],
       [14.164955143228045, 121.24133426696064],
@@ -845,6 +911,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["ICOPED"],
     address: "",
     marker: [14.167532, 121.242297],
+    sections: [],
     polygon: [
       [14.167744, 121.242019],
       [14.167707, 121.242092],
@@ -867,6 +934,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "",
     marker: [14.165001, 121.240152],
+    sections: [],
     polygon: [
       [14.165229, 121.239879],
       [14.165208, 121.240075],
@@ -896,6 +964,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Victoria M. Ela Avenue",
     marker: [14.164913, 121.244203],
+    sections: [],
     polygon: [
       [14.165131, 121.244066],
       [14.165179, 121.244185],
@@ -918,6 +987,7 @@ const buildings: IBuilding[] = [
     alternateNames: ["Charles Fullter Baker Memorial Hall"],
     address: "Mariano M. Mondonedo Avenue",
     marker: [14.161756, 121.242772],
+    sections: [],
     polygon: [
       [14.161736, 121.242489],
       [14.161511, 121.242635],
@@ -932,6 +1002,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Mariano M Modonedo Avenue",
     marker: [14.161347, 121.242915],
+    sections: [],
     polygon: [
       [14.161346, 121.242768],
       [14.161479, 121.242977],
@@ -946,6 +1017,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Mariano M. Mondonedo Avenue",
     marker: [14.162129, 121.242332],
+    sections: [],
     polygon: [
       [14.162152, 121.242194],
       [14.162261, 121.24237],
@@ -962,6 +1034,7 @@ const buildings: IBuilding[] = [
     alternateNames: [],
     address: "Jose B Juliano Avenue",
     marker: [14.162269, 121.24022],
+    sections: [],
     polygon: [
       [14.162701, 121.240193],
       [14.162449, 121.240319],
