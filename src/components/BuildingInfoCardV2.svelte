@@ -48,7 +48,7 @@
             <BuildingTypeIconV2 type={building.type} />
           </div>
           <div class="flex flex-col">
-            <h2 class="text-xl font-bold tracking-tight text-gray-900 truncate">{building.name}</h2>
+            <h2 class="text-xl font-bold tracking-tight text-gray-900">{building.name}</h2>
             <div class="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
               <span class="font-medium">{building.type}</span>
               <span>&bull;</span>
