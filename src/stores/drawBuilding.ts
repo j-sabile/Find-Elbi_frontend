@@ -20,6 +20,19 @@ export interface MapState {
   building: IBuilding;
 }
 
+const defaultBuildingState: IBuilding = {
+  id: "",
+  address: "",
+  alternateNames: [],
+  college: "College of Arts and Sciences",
+  name: "",
+  marker: [0, 0],
+  polygon: [],
+  sections: [],
+  type: "Academic Building",
+  floors: [],
+};
+
 const initialState: MapState = {
   procedure: "idle",
   perimeter: [],
@@ -28,7 +41,7 @@ const initialState: MapState = {
   selectedSectionId: null,
   showAllSectionPoints: false,
   isEditingBuilding: true,
-  building: { id: "", address: "", alternateNames: [], college: "College of Arts and Sciences", name: "", marker: [0, 0], polygon: [], sections: [], type: "Academic Building", floors: [] },
+  building: { ...defaultBuildingState },
 };
 
 type BuildingCommonKeys = "name" | "alternateNames" | "address" | "floors" | "type" | "polygon"; // Keys that are common in Building
