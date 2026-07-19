@@ -472,8 +472,8 @@ const buildings: IBuilding[] = [
             id: "room 24",
           },
           {
-            name: "ICS D 105",
-            code: "ICS D105",
+            name: "ICS D 106",
+            code: "ICS D106",
             alternateNames: [],
             polygon: [
               [14.16460859719578, 121.24218414161928],
@@ -486,8 +486,8 @@ const buildings: IBuilding[] = [
             id: "room 25",
           },
           {
-            name: "ICS D 106",
-            code: "ICS D106",
+            name: "ICS D 107",
+            code: "ICS D107",
             alternateNames: [],
             polygon: [
               [14.164687173279773, 121.24218916534055],
@@ -500,8 +500,8 @@ const buildings: IBuilding[] = [
             id: "room 26",
           },
           {
-            name: "ICS D 107",
-            code: "ICS D107",
+            name: "ICS D 108",
+            code: "ICS D108",
             alternateNames: [],
             polygon: [
               [14.164647869278346, 121.24227726903314],
@@ -514,8 +514,8 @@ const buildings: IBuilding[] = [
             id: "room 27",
           },
           {
-            name: "ICS D 108",
-            code: "ICS D108",
+            name: "ICS D 109",
+            code: "ICS D109",
             alternateNames: [],
             polygon: [
               [14.164719304975678, 121.24226536050044],
@@ -528,8 +528,8 @@ const buildings: IBuilding[] = [
             id: "room 28",
           },
           {
-            name: "ICS D 109",
-            code: "ICS D109",
+            name: "ICS D 110",
+            code: "ICS D110",
             alternateNames: [],
             polygon: [
               [14.164751436647538, 121.24234155568189],
@@ -554,6 +554,34 @@ const buildings: IBuilding[] = [
             ],
             roomType: "Academic Room",
             id: "room 30",
+          },
+          {
+            name: "ICS Comfort Room",
+            code: "ICS-CR101",
+            alternateNames: [],
+            polygon: [
+              [14.16462290981584, 121.24203677508547],
+              [14.164605058836568, 121.24199444447439],
+              [14.164657664097907, 121.24197084746146],
+              [14.164675515077178, 121.2420131780707],
+              [14.16462290981584, 121.24203677508547],
+            ],
+            roomType: "Comfort Room CR",
+            id: "room 31",
+          },
+          {
+            name: "ICS D 105",
+            code: "ICS D105",
+            alternateNames: [],
+            polygon: [
+              [14.16458360585181, 121.24212487873633],
+              [14.164558614493298, 121.24206561586645],
+              [14.164611219757452, 121.24204201886504],
+              [14.164636211115965, 121.24210128173235],
+              [14.16458360585181, 121.24212487873633],
+            ],
+            roomType: "Faculty Room",
+            id: "room 32",
           },
         ],
       },
@@ -687,12 +715,69 @@ const buildings: IBuilding[] = [
             roomType: "Comfort Room CR",
             id: "room 9",
           },
+          {
+            name: "C-201",
+            code: "PS C201",
+            alternateNames: [],
+            polygon: [
+              [14.16449297952841, 121.24170590636982],
+              [14.164528406948376, 121.24178991626884],
+              [14.164461606613648, 121.24181988070488],
+              [14.164426179193685, 121.24173587080118],
+              [14.16449297952841, 121.24170590636982],
+            ],
+            roomType: "Academic Room",
+            id: "room 10",
+          },
+          {
+            name: "C-202",
+            code: "PS C202",
+            alternateNames: [],
+            polygon: [
+              [14.164528406948376, 121.24178991626884],
+              [14.164563834339114, 121.2418739261941],
+              [14.164497034004386, 121.24190389063482],
+              [14.164461606613648, 121.24181988070488],
+              [14.164528406948376, 121.24178991626884],
+            ],
+            roomType: "Academic Room",
+            id: "room 11",
+          },
         ],
       },
       {
         levelIndex: 2,
         label: "F3",
-        rooms: [],
+        rooms: [
+          {
+            name: "C-302",
+            code: "PS C302",
+            alternateNames: [],
+            polygon: [
+              [14.164528406948376, 121.24178991626884],
+              [14.164563834339114, 121.2418739261941],
+              [14.164497034004386, 121.24190389063482],
+              [14.164461606613648, 121.24181988070488],
+              [14.164528406948376, 121.24178991626884],
+            ],
+            roomType: "Academic Room",
+            id: "room 1",
+          },
+          {
+            name: "C-301",
+            code: "PS C301",
+            alternateNames: [],
+            polygon: [
+              [14.16449297952841, 121.24170590636982],
+              [14.164528406948376, 121.24178991626884],
+              [14.164461606613648, 121.24181988070488],
+              [14.164426179193685, 121.24173587080118],
+              [14.16449297952841, 121.24170590636982],
+            ],
+            roomType: "Academic Room",
+            id: "room 2",
+          },
+        ],
       },
       {
         levelIndex: 3,
