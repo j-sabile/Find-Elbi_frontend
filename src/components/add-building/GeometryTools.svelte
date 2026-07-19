@@ -6,6 +6,7 @@
   const drawingTools = [
     {
       label: "Rectangle",
+      type: "number",
       value: "generate_rectangle",
       inputLabel: "Rectangle Width",
       unit: "m",
@@ -17,6 +18,7 @@
     },
     {
       label: "Right Triangle",
+      type: "number",
       value: "generate_right_triangle",
       inputLabel: "Degrees",
       unit: "",
@@ -27,18 +29,20 @@
       helpText: "Enter the degrees for the triangle in meters.",
     },
     {
-      label: "Point at %",
+      label: "Points at %",
+      type: "text",
       value: "generate_points_along_segment",
-      inputLabel: "Split Percentage",
+      inputLabel: "Split Percentages",
       unit: "%",
       min: 1,
       max: 99,
       step: 1,
-      placeholder: "1-99",
-      helpText: "Splits the segment by creating a point at the specified percentage.",
+      placeholder: "e.g. 25 50 75",
+      helpText: "Enter space-separated percentages to split the segment at multiple points.",
     },
     {
       label: "Equidistant Points",
+      type: "number",
       value: "generate_equally_spaced_points",
       inputLabel: "Number of Points",
       unit: "pts",
@@ -65,9 +69,14 @@
       newPoints = GeometryService.generateEquallySpaced(pts[0], pts[1], toolParam);
       drawBuildingStore.clearDraft();
     } else if (selectedTool === "generate_points_along_segment") {
-      newPoints = GeometryService.generatePointsAlong(pts[0], pts[1], toolParam / 100);
+      const paramString = String(toolParam);
+      const distancesArray = paramString
+        .split(" ")
+        .map((val) => Number(val.trim()) / 100)
+        .filter((val) => !isNaN(val));
+      if (distancesArray.length === 0) return;
+      newPoints = GeometryService.generatePointsAlong(pts[0], pts[1], distancesArray);
     }
-
     newPoints.forEach((pt) => drawBuildingStore.addDraftPoint(pt));
   }
 
@@ -146,16 +155,27 @@
       </div>
 
       <div class="relative flex items-center">
-        <input
-          id="tool-input"
-          type="number"
-          class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all pr-10"
-          bind:value={toolParam}
-          min={activeToolConfig.min}
-          max={activeToolConfig.max}
-          step={activeToolConfig.step}
-          placeholder={activeToolConfig.placeholder}
-        />
+        {#if activeToolConfig.type === "number"}
+          <input
+            id="tool-input"
+            type="number"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all pr-10"
+            bind:value={toolParam}
+            min={activeToolConfig.min}
+            max={activeToolConfig.max}
+            step={activeToolConfig.step}
+            placeholder={activeToolConfig.placeholder}
+          />
+        {:else}
+          <input
+            id="tool-input"
+            type="text"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all pr-10"
+            bind:value={toolParam}
+            placeholder={activeToolConfig.placeholder}
+          />
+        {/if}
+
         {#if activeToolConfig.unit}
           <span class="absolute right-3 text-sm font-medium text-gray-400 pointer-events-none">
             {activeToolConfig.unit}
@@ -166,7 +186,7 @@
       <button
         class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-400 hover:shadow-md"
         on:click={executeTool}
-        disabled={$drawBuildingStore.draftPoints.length < 2 || !toolParam || toolParam < activeToolConfig.min}
+        disabled={$drawBuildingStore.draftPoints.length < 2 || !toolParam || (activeToolConfig.type === "number" && Number(toolParam) < (activeToolConfig.min ?? 0))}
       >
         Generate Shape
       </button>

@@ -45,10 +45,10 @@ export class GeometryService {
   /**
    * Generates points along a segment at a specific distance.
    */
-  static generatePointsAlong(p1: [number, number], p2: [number, number], distance: number): [number, number][] {
+  static generatePointsAlong(p1: [number, number], p2: [number, number], distances: number[]): [number, number][] {
     const pointA = turf.point(flipLatLng(p1));
     const pointB = turf.point(flipLatLng(p2));
-    const newPolygon = getPointsAlongSegment(pointA, pointB, [distance]);
+    const newPolygon = getPointsAlongSegment(pointA, pointB, distances);
 
     const points: [number, number][] = [];
     for (const [_, coords] of newPolygon.entries()) {
