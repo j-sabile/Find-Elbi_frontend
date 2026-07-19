@@ -125,49 +125,51 @@
   $: activeToolConfig = drawingTools.find((t) => t.value === selectedTool);
 </script>
 
-<div class="flex flex-col gap-4 w-full">
-  {#if $drawBuildingStore.procedure !== "generate_sections"}
-    <button
-      class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-700 w-full"
-      on:click={() => drawBuildingStore.setProcedure("generate_sections")}
-    >
-      ▶ Start
-    </button>
-  {:else}
-    <div class="flex items-center gap-3 w-full">
+<div class="flex flex-col gap-4 w-full h-full min-h-0 pt-4">
+  <div class="flex flex-col gap-4 px-4">
+    {#if $drawBuildingStore.procedure !== "generate_sections"}
       <button
-        class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200"
-        on:click={() => drawBuildingStore.removeLastDraftPoint()}
+        class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-700 w-full"
+        on:click={() => drawBuildingStore.setProcedure("generate_sections")}
       >
-        ↶ Undo
+        ▶ Start
       </button>
-      <button
-        class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-700"
-        on:click={() => {
-          drawBuildingStore.saveAsSection();
-          drawBuildingStore.setProcedure("idle");
-        }}
-      >
-        ✓ Done
-      </button>
-    </div>
-  {/if}
-  <button
-    class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 w-full"
-    on:click={() => drawBuildingStore.setShowAllSectionPoints(!$drawBuildingStore.showAllSectionPoints)}
-  >
-    {#if $drawBuildingStore.showAllSectionPoints}
-      <Eye class="w-4 h-4 shrink-0 text-gray-500" />
-      Hide All Section Points
     {:else}
-      <EyeOff class="w-4 h-4 shrink-0 text-gray-500" />
-      Show All Section Points
+      <div class="flex items-center gap-3 w-full">
+        <button
+          class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200"
+          on:click={() => drawBuildingStore.removeLastDraftPoint()}
+        >
+          ↶ Undo
+        </button>
+        <button
+          class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-700"
+          on:click={() => {
+            drawBuildingStore.saveAsSection();
+            drawBuildingStore.setProcedure("idle");
+          }}
+        >
+          ✓ Done
+        </button>
+      </div>
     {/if}
-  </button>
+    <button
+      class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 w-full"
+      on:click={() => drawBuildingStore.setShowAllSectionPoints(!$drawBuildingStore.showAllSectionPoints)}
+    >
+      {#if $drawBuildingStore.showAllSectionPoints}
+        <Eye class="w-4 h-4 shrink-0 text-gray-500" />
+        Hide All Section Points
+      {:else}
+        <EyeOff class="w-4 h-4 shrink-0 text-gray-500" />
+        Show All Section Points
+      {/if}
+    </button>
+  </div>
   <hr />
 
   <!-- TOOLS SELECTION -->
-  <div class="grid gap-3 grid-cols-2">
+  <div class="grid gap-3 grid-cols-2 px-4">
     {#each drawingTools as tool}
       <button
         class="inline-flex items-center justify-center gap-2 rounded-lg border px-2 py-2 text-[10.5px] font-medium transition-colors duration-200 {selectedTool === tool.value
@@ -186,7 +188,7 @@
 
   <!-- SHOW SELECTED TOOL -->
   {#if activeToolConfig}
-    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-200">
+    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-200 px-4">
       <div class="flex flex-col gap-1">
         <label for="tool-input" class="text-sm font-semibold text-gray-800">
           {activeToolConfig.inputLabel}
@@ -248,9 +250,9 @@
   <!-- SECTIONS LIST -->
   {#if $drawBuildingStore.building?.sections && $drawBuildingStore.building.sections.length > 0}
     <hr />
-    <div class="flex flex-col gap-3">
-      <h3 class="text-sm font-semibold text-gray-800">Generated Sections</h3>
-      <div class="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+    <div class="flex flex-col gap-3 h-full min-h-0">
+      <h3 class="text-sm font-semibold text-gray-800 px-4 h-full min-h-0">Generated Sections</h3>
+      <div class="flex flex-col gap-2 overflow-y-auto pr-1 px-4">
         {#each $drawBuildingStore.building.sections as section, i (section.id)}
           <button
             class="flex items-center justify-between p-3 rounded-lg border transition-colors duration-200 shadow-sm group cursor-pointer

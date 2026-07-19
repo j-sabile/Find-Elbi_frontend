@@ -52,7 +52,7 @@
   }
 </script>
 
-<div class="absolute top-4 left-4 z-20 flex flex-col pointer-events-auto select-none">
+<div class="absolute top-4 left-4 z-20 flex flex-col pointer-events-auto select-none h-[calc(100vh-2rem)]">
   {#if !isOpen}
     <button
       class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-200"
@@ -64,7 +64,7 @@
       </svg>
     </button>
   {:else}
-    <div class="bg-white border border-gray-200 rounded-2xl shadow-lg flex flex-col overflow-hidden w-80 md:w-96">
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-lg flex flex-col overflow-hidden w-80 md:w-96 h-full min-h-0">
       <div class="p-4 flex items-center justify-between gap-3 border-b border-gray-200">
         <div class="flex items-center gap-3">
           <svg class="w-5 h-5 shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -110,9 +110,9 @@
         </button>
       </div>
 
-      <div class="flex flex-col gap-3 p-4 overflow-y-auto max-h-[28rem]">
+      <div class="flex flex-col gap-3 h-full min-h-0">
         {#if activeTab === "trace"}
-          <div class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
+          <div class="flex items-center gap-3 bg-white rounded-xl shadow-sm p-4">
             <button
               class="flex-1 py-1.5 text-sm font-medium rounded-lg transition-colors duration-200 {traceTarget === 'building'
                 ? 'bg-blue-50 border border-blue-300 text-blue-600 shadow-sm'
@@ -139,18 +139,18 @@
         {:else if activeTab === "sections"}
           <GeometryTools />
         {:else if activeTab === "summary"}
-          <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-3 h-full min-h-0">
             {#if $drawBuildingStore.building === null}
-              <div class="bg-white border border-gray-200 rounded-xl p-4 flex flex-col gap-3 text-center">
+              <div class="bg-white border border-gray-200 rounded-xl p-4 flex flex-col gap-3 text-center px-4">
                 <span class="text-sm text-gray-700">No spatial vectors are saved yet.</span>
                 <span class="text-xs text-gray-500">Trace a section and save to store it here for export.</span>
               </div>
             {:else}
-              <div class="flex flex-col h-full w-full">
+              <div class="flex flex-col w-full h-full min-h-0">
                 <!-- Main Content Flow -->
-                <div class="flex flex-col pb-6">
+                <div class="flex flex-col pb-6 h-full min-h-0">
                   <!-- 1. HEADER: Identity (Name, Chips, Alt Names) -->
-                  <div class="flex flex-col gap-3 border-b border-gray-100 pb-5">
+                  <div class="flex flex-col gap-3 border-b border-gray-100 pb-5 px-4">
                     <h1 class="text-3xl font-bold text-gray-900 tracking-tight">
                       {$drawBuildingStore.building.name || "Unnamed Building"}
                     </h1>
@@ -179,16 +179,14 @@
                   </div>
 
                   <!-- 3. CONTENTS: Floor Plans -->
-                  <div class="flex flex-col mt-2">
-                    <h2 class="text-lg font-semibold text-gray-900">Floor Plans</h2>
-                    <div class="w-full">
-                      <FloorDropdowns building={$drawBuildingStore.building} />
-                    </div>
+                  <div class="flex flex-col mt-2 h-full min-h-0">
+                    <h2 class="text-lg font-semibold text-gray-900 px-4">Floor Plans</h2>
+                    <FloorDropdowns building={$drawBuildingStore.building} />
                   </div>
                 </div>
 
                 <!-- 4. ACTIONS BAR (Pushed to bottom) -->
-                <div class="mt-auto pt-5 border-t border-gray-200 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
+                <div class="mt-auto pt-5 border-t border-gray-200 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 p-4">
                   <button
                     class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2.5 text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
                     on:click={clearAllDrafts}

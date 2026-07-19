@@ -64,7 +64,7 @@
   }
 </script>
 
-<div class="flex flex-col gap-3">
+<div class="flex flex-col gap-3 overflow-y-auto px-4">
   <label for="room-code" class="text-xs text-gray-500 font-medium">Room Code</label>
   <input
     id="room-code"
@@ -120,13 +120,11 @@
       </div>
     {/if}
   </div>
-  <div class="grid gap-3 grid-cols-2">
-    <button
-      class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-700 disabled:opacity-50"
-      disabled={polygonPoints.length < 3 || $drawBuildingStore.building === null}
-      on:click={handleSave}
-    >
-      Save Room
-    </button>
-  </div>
+  <button
+    class="inline-flex items-center w-full justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
+    disabled={polygonPoints.length < 3 || $drawBuildingStore.building === null}
+    on:click={handleSave}
+  >
+    Save Room
+  </button>
 </div>

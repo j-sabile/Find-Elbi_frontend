@@ -38,7 +38,7 @@
   }
 </script>
 
-<div class="flex flex-col gap-3">
+<div class="flex flex-col gap-3 overflow-y-auto px-4">
   <!-- svelte-ignore a11y-label-has-associated-control -->
   <label class="text-xs text-gray-500 font-medium">Building Name</label>
   <input

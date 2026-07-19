@@ -11,7 +11,7 @@
   <SearchBarV2 />
   <BuildingInfoCardV2 />
   <MapToolbarV2 />
-  <AddBuildingPanel />
+  <!-- <AddBuildingPanel /> -->
 </div>
 
 <style>

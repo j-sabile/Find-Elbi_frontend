@@ -18,13 +18,13 @@
   }
 </script>
 
-<div class="flex flex-col w-full">
+<div class="flex flex-col w-full h-full">
   {#if building.floors && building.floors.length > 0}
     <!-- Horizontal Floor Tabs -->
     <FloorChips floors={building.floors} floorLevelIndex={$navigationStoreV2.selectedFloorIndex} on:select={(e) => selectFloor(e.detail)} />
 
     <!-- Active Floor's Room List -->
-    <div class="flex-1 overflow-y-auto p-3 bg-gray-50 overscroll-contain">
+    <div class="overflow-y-auto p-3 bg-gray-50">
       {#if activeFloor}
         {#if activeFloor.rooms.length === 0}
           <div class="text-center text-sm text-gray-500 py-6">No rooms on this floor.</div>
