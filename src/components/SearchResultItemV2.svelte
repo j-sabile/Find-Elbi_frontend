@@ -1,16 +1,12 @@
 <script lang="ts">
   import type { ISearchResult } from "../interfaces/ISearchResult";
-  import { navigationStoreV2 } from "../stores/navigationV2";
   import BuildingTypeIconV2 from "./BuildingTypeIconV2.svelte";
 
   export let result: ISearchResult;
   export let active = false;
 </script>
 
-<button
-  class="flex items-center justify-between gap-3 p-4 w-full text-left transition-colors duration-200 hover:bg-gray-50 {active ? 'bg-blue-50 border-l-2 border-blue-300' : ''}"
-  on:click={() => navigationStoreV2.selectSearchResult(result)}
->
+<button class="flex items-center justify-between gap-3 p-4 w-full text-left transition-colors duration-200 hover:bg-gray-50 {active ? 'bg-blue-50 border-l-2 border-blue-300' : ''}" on:click>
   <div class="flex items-center gap-3 min-w-0">
     <div class="flex items-center justify-center w-11 h-11 rounded-xl border border-gray-200 bg-white shrink-0">
       <BuildingTypeIconV2 type={result.kind === "building" ? result.buildingType : result.roomType} />
