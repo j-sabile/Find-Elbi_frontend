@@ -76,7 +76,7 @@ function createBuildingMapStore() {
 
         return {
           ...state,
-          sections: newSections,
+          building: { ...state.building, sections: newSections },
           selectedSectionId: newSelection,
         };
       }),
