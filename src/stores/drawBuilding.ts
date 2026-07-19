@@ -5,6 +5,7 @@ import { generateNextId } from "../utils/idGenerator";
 import type { IAcadBuilding, IBuilding, IRegBuilding, Section } from "../interfaces/IBuilding";
 import buildings from "../data/buildings";
 import { getBuildingLabelPoint } from "../utils/buildingGenerator";
+// import { unfinishedData } from "../unfinishedData";
 
 // Define the 3 distinct drawing procedures
 export type MapProcedure = "idle" | "generate_sections" | "trace_perimeter" | "trace_rooms";
@@ -18,6 +19,7 @@ export interface MapState {
   showAllSectionPoints: boolean;
   isEditingBuilding: boolean;
   building: IBuilding;
+  previewSections: Section[];
 }
 
 const defaultBuildingState: IBuilding = {
@@ -41,7 +43,9 @@ const initialState: MapState = {
   selectedSectionId: null,
   showAllSectionPoints: false,
   isEditingBuilding: true,
+  // building: unfinishedData,
   building: { ...defaultBuildingState },
+  previewSections: [],
 };
 
 type BuildingCommonKeys = "name" | "alternateNames" | "address" | "floors" | "type" | "polygon"; // Keys that are common in Building
@@ -109,10 +113,22 @@ function createBuildingMapStore() {
           draftPoints: [], // Reset for the next section
           building: {
             ...state.building,
-            sections: [...state.building.sections, { id: generateNextId(state.building.sections, "Section"), polygon: state.draftPoints }],
+            sections: [...state.building.sections, { id: generateNextId(state.building.sections, "Section")[0], polygon: state.draftPoints }],
           },
         };
       }),
+
+    savePreviewSections: () => {
+      update((state) => {
+        const sectionIds = generateNextId(state.building.sections, "SECTION", state.previewSections.length);
+        const newSections = state.previewSections.map((preview, ind) => ({ id: sectionIds[ind], polygon: preview.polygon }));
+        return {
+          ...state,
+          previewSections: [],
+          building: { ...state.building, sections: [...state.building.sections, ...newSections] },
+        };
+      });
+    },
 
     commitDraftAsPerimeter: () =>
       update((state) => {
@@ -133,7 +149,7 @@ function createBuildingMapStore() {
         building:
           building.type === BUILDING_TYPES.ACADEMIC
             ? {
-                id: generateNextId(buildings, ""),
+                id: generateNextId(buildings, "BUILDING")[0],
                 marker: getBuildingLabelPoint(building.polygon),
                 polygon: building.polygon,
                 floors: building.floors,
@@ -145,7 +161,7 @@ function createBuildingMapStore() {
                 sections: state.building?.sections ?? [],
               }
             : {
-                id: generateNextId(buildings, ""),
+                id: generateNextId(buildings, "BUILDING")[0],
                 marker: getBuildingLabelPoint(building.polygon),
                 polygon: building.polygon,
                 floors: building.floors,
@@ -169,7 +185,7 @@ function createBuildingMapStore() {
         if (floorIndex !== -1) {
           updatedFloors[floorIndex] = {
             ...updatedFloors[floorIndex],
-            rooms: [...updatedFloors[floorIndex].rooms, { ...room, id: generateNextId(updatedFloors[floorIndex].rooms, "room") }],
+            rooms: [...updatedFloors[floorIndex].rooms, { ...room, id: generateNextId(updatedFloors[floorIndex].rooms, "room")[0] }],
           };
         }
 
@@ -179,6 +195,10 @@ function createBuildingMapStore() {
 
     setIsEditingBuilding: (isEditing: boolean) => {
       update((state) => ({ ...state, isEditingBuilding: isEditing }));
+    },
+
+    setPreviewSections: (sections: Section[]) => {
+      update((state) => ({ ...state, previewSections: sections }));
     },
 
     // --- Resets ---

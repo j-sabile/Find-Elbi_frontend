@@ -230,4 +230,83 @@
       });
     }
   }
+
+  // --- PREVIEW SECTIONS REACTIVE BLOCK ---
+  let renderedPreviews: Record<string, L.Polygon> = {};
+  $: if ($mapInstance && $drawBuildingStore) {
+    const map = $mapInstance;
+
+    // --- EXISTING SECTIONS LOGIC ---
+    const currentSections = $drawBuildingStore.building.sections;
+    const currentSectionIds = new Set(currentSections.map((s) => s.id));
+
+    // A. Clean up standard polygons
+    Object.keys(renderedSections).forEach((id) => {
+      if (!currentSectionIds.has(id)) {
+        renderedSections[id].remove();
+        delete renderedSections[id];
+      }
+    });
+
+    // B. Draw or Update standard sections
+    currentSections?.forEach((section) => {
+      const isSelected = $drawBuildingStore.selectedSectionId === section.id;
+
+      const polyStyle = {
+        color: isSelected ? "#ffaa00" : "#3388ff",
+        fillColor: isSelected ? "#ffaa00" : "#3388ff",
+        fillOpacity: isSelected ? 0.6 : 0.3,
+        weight: isSelected ? 3 : 2,
+        interactive: true,
+      };
+
+      if (!renderedSections[section.id]) {
+        const poly = L.polygon(section.polygon, polyStyle).addTo(map);
+
+        poly.on("click", (e: L.LeafletMouseEvent) => {
+          if ($drawBuildingStore.procedure === "generate_sections") return;
+          L.DomEvent.stopPropagation(e);
+          drawBuildingStore.setSelectedSection(section.id);
+        });
+
+        renderedSections[section.id] = poly;
+      } else {
+        renderedSections[section.id].setLatLngs(section.polygon);
+        renderedSections[section.id].setStyle(polyStyle);
+      }
+    });
+
+    // --- PREVIEW SECTIONS LOGIC ---
+    const previewSections = $drawBuildingStore.previewSections || [];
+    const previewSectionIds = new Set(previewSections.map((s) => s.id));
+
+    // C. Clean up preview polygons
+    Object.keys(renderedPreviews).forEach((id) => {
+      if (!previewSectionIds.has(id)) {
+        renderedPreviews[id].remove();
+        delete renderedPreviews[id];
+      }
+    });
+
+    // D. Draw or Update preview sections
+    previewSections.forEach((section) => {
+      const previewStyle = {
+        color: "#888888", // Different border color (Grey)
+        fillColor: "#cccccc", // Different fill color
+        fillOpacity: 0.15, // Lighter transparency
+        weight: 2,
+        dashArray: "5, 5", // Dashed border makes it obviously a "preview"
+        interactive: false, // NOT clickable - mouse events pass through to map
+      };
+
+      if (!renderedPreviews[section.id]) {
+        // Notice we do NOT attach a click listener here
+        const poly = L.polygon(section.polygon, previewStyle).addTo(map);
+        renderedPreviews[section.id] = poly;
+      } else {
+        renderedPreviews[section.id].setLatLngs(section.polygon);
+        renderedPreviews[section.id].setStyle(previewStyle);
+      }
+    });
+  }
 </script>

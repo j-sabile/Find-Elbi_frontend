@@ -128,3 +128,17 @@ export function getBuildingLabelPoint(polygonPoints: [number, number][]): [numbe
   // Return raw [lng, lat] / [x, y] coordinates
   return labelPointFeature.geometry.coordinates as [number, number];
 }
+
+/**
+ * Parses a space-separated string of percentage values into an array of decimal distances
+ * @param toolParam - The parameter to parse (string, number, or any)
+ * @param divisor - The number to divide by (default: 100 for percentages)
+ * @returns Array of numeric distance values
+ */
+export function parseNumberArray(toolParam: unknown, divisor: number = 100): number[] {
+  const paramString = String(toolParam);
+  return paramString
+    .split(" ")
+    .map((val: string) => Number(val.trim()) / divisor)
+    .filter((val: number): val is number => !isNaN(val));
+}

@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { drawBuildingStore } from "../../stores/drawBuilding";
+  import { drawBuildingStore, selectedSection } from "../../stores/drawBuilding";
   import { GeometryService } from "../../services/GeometryService";
   import { Eye, EyeOff, Trash } from "lucide-svelte";
+  import { parseNumberArray } from "../../utils/buildingGenerator";
+  import { type Section } from "../../interfaces/IBuilding";
 
   const drawingTools = [
     {
@@ -15,6 +17,8 @@
       step: 1,
       placeholder: "e.g., 5",
       helpText: "Enter the total width of the rectangle in meters.",
+      requiredPoints: 2,
+      optionLabel: "Direction",
     },
     {
       label: "Right Triangle",
@@ -27,6 +31,8 @@
       step: 1,
       placeholder: "e.g., 5",
       helpText: "Enter the degrees for the triangle in meters.",
+      requiredPoints: 2,
+      optionLabel: null,
     },
     {
       label: "Points at %",
@@ -39,6 +45,8 @@
       step: 1,
       placeholder: "e.g. 25 50 75",
       helpText: "Enter space-separated percentages to split the segment at multiple points.",
+      requiredPoints: 2,
+      optionLabel: null,
     },
     {
       label: "Equidistant Points",
@@ -51,33 +59,67 @@
       step: 1,
       placeholder: "Min. 3",
       helpText: "Creates multiple points with equal distances between them (must be a whole number of 3 or more).",
+      requiredPoints: 2,
+      optionLabel: null,
+    },
+    {
+      label: "Split Area by Percentages",
+      type: "text",
+      value: "split_area_by_percentages",
+      inputLabel: "Cut Percentages",
+      unit: "%",
+      placeholder: "e.g., 20 40 60",
+      helpText: "Enter percentages separated by spaces or commas to cut the area into smaller polygon sections.",
+      requiredPoints: 4,
+      optionLabel: "Split Edge",
     },
   ] as const;
 
   let selectedTool: (typeof drawingTools)[number]["value"] | null = null;
-  let toolParam: number | null = null; // Changed to null so placeholder shows up on fresh click
+  let toolParam: number | string | null = null; // Changed to null so placeholder shows up on fresh click
+  let switchDirectionValue = false;
 
-  function executeTool() {
-    const pts = $drawBuildingStore.draftPoints;
-    if (pts.length < 2 || !toolParam) return;
+  function executeSelectedTool(toolParam: number | string) {
+    const pts = $selectedSection ? $selectedSection.polygon : $drawBuildingStore.draftPoints;
+    if (!toolParam) return [];
 
-    let newPoints: [number, number][] = [];
+    let newPolygons: [number, number][][] = [];
 
     if (selectedTool === "generate_rectangle") {
-      newPoints = GeometryService.generateRectanglePoints(pts[0], pts[1], toolParam);
+      newPolygons = [GeometryService.generateRectanglePoints(pts[0], pts[1], Number(toolParam) * (switchDirectionValue ? 1 : -1))];
     } else if (selectedTool === "generate_equally_spaced_points") {
-      newPoints = GeometryService.generateEquallySpaced(pts[0], pts[1], toolParam);
+      newPolygons = [GeometryService.generateEquallySpaced(pts[0], pts[1], Number(toolParam))];
       drawBuildingStore.clearDraft();
     } else if (selectedTool === "generate_points_along_segment") {
-      const paramString = String(toolParam);
-      const distancesArray = paramString
-        .split(" ")
-        .map((val) => Number(val.trim()) / 100)
-        .filter((val) => !isNaN(val));
-      if (distancesArray.length === 0) return;
-      newPoints = GeometryService.generatePointsAlong(pts[0], pts[1], distancesArray);
+      const distancesArray = parseNumberArray(toolParam);
+      if (distancesArray.length === 0) return [];
+      newPolygons = [GeometryService.generatePointsAlong(pts[0], pts[1], distancesArray)];
+    } else if (selectedTool === "split_area_by_percentages") {
+      const distancesArray = parseNumberArray(toolParam);
+      if (distancesArray.length === 0) return [];
+      newPolygons = GeometryService.splitQuadrilateralByPercentages(pts, distancesArray, switchDirectionValue ? 0 : 1);
     }
-    newPoints.forEach((pt) => drawBuildingStore.addDraftPoint(pt));
+
+    const newSections: Section[] = newPolygons.map((p, ind) => ({ id: `SEC${ind + 1}`, polygon: p }));
+    drawBuildingStore.setPreviewSections(newSections);
+  }
+
+  function handleActiveToolValueChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    executeSelectedTool(value);
+  }
+
+  function handleSwitchDirectionChange() {
+    if (toolParam === null) return;
+    switchDirectionValue = !switchDirectionValue;
+    executeSelectedTool(toolParam);
+  }
+
+  function handleSaveClick() {
+    if (toolParam === null) return;
+    executeSelectedTool(toolParam);
+    drawBuildingStore.savePreviewSections();
   }
 
   $: activeToolConfig = drawingTools.find((t) => t.value === selectedTool);
@@ -135,7 +177,7 @@
           selectedTool = selectedTool === tool.value ? null : tool.value;
           toolParam = null; // Reset param when switching tools
         }}
-        disabled={$drawBuildingStore.draftPoints.length < 2}
+        disabled={$drawBuildingStore.draftPoints.length != tool.requiredPoints && $selectedSection?.polygon.length != tool.requiredPoints}
       >
         {tool.label}
       </button>
@@ -165,6 +207,7 @@
             max={activeToolConfig.max}
             step={activeToolConfig.step}
             placeholder={activeToolConfig.placeholder}
+            on:input={handleActiveToolValueChange}
           />
         {:else}
           <input
@@ -173,6 +216,7 @@
             class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all pr-10"
             bind:value={toolParam}
             placeholder={activeToolConfig.placeholder}
+            on:input={handleActiveToolValueChange}
           />
         {/if}
 
@@ -182,13 +226,21 @@
           </span>
         {/if}
       </div>
+      {#if activeToolConfig.optionLabel}
+        <div class="flex flex-row justify-between items-center w-fulls">
+          {activeToolConfig.optionLabel}
+          <button class="rounded-lg border border-gray-200 bg-white text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors duration-200" on:click={handleSwitchDirectionChange}>
+            ↔ Switch
+          </button>
+        </div>
+      {/if}
 
       <button
         class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-400 hover:shadow-md"
-        on:click={executeTool}
-        disabled={$drawBuildingStore.draftPoints.length < 2 || !toolParam || (activeToolConfig.type === "number" && Number(toolParam) < (activeToolConfig.min ?? 0))}
+        on:click={handleSaveClick}
+        disabled={!toolParam || (activeToolConfig.type === "number" && Number(toolParam) < (activeToolConfig.min ?? 0))}
       >
-        Generate Shape
+        Save
       </button>
     </div>
   {/if}
