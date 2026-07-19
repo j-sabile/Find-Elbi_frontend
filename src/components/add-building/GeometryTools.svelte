@@ -9,7 +9,7 @@
       value: "generate_rectangle",
       inputLabel: "Rectangle Width",
       unit: "m",
-      min: 1,
+      min: -99999,
       max: 99999,
       step: 1,
       placeholder: "e.g., 5",
@@ -93,7 +93,7 @@
       <button
         class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-700"
         on:click={() => {
-          drawBuildingStore.commitDraftPointsAsSection();
+          drawBuildingStore.saveAsSection();
           drawBuildingStore.setProcedure("idle");
         }}
       >
@@ -174,12 +174,12 @@
   {/if}
 
   <!-- SECTIONS LIST -->
-  {#if $drawBuildingStore.sections && $drawBuildingStore.sections.length > 0}
+  {#if $drawBuildingStore.building?.sections && $drawBuildingStore.building.sections.length > 0}
     <hr />
     <div class="flex flex-col gap-3">
       <h3 class="text-sm font-semibold text-gray-800">Generated Sections</h3>
       <div class="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
-        {#each $drawBuildingStore.sections as section, i (section.id)}
+        {#each $drawBuildingStore.building.sections as section, i (section.id)}
           <button
             class="flex items-center justify-between p-3 rounded-lg border transition-colors duration-200 shadow-sm group cursor-pointer
               {section.id === $drawBuildingStore.selectedSectionId ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white hover:bg-gray-50'}"

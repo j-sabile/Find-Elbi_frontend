@@ -11,27 +11,27 @@ export type MapProcedure = "idle" | "generate_sections" | "trace_perimeter" | "t
 
 export interface MapState {
   procedure: MapProcedure;
-  sections: Section[]; // Array of polygons
   perimeter: [number, number][]; // The main building outline
   draftPoints: [number, number][]; // Points currently being drawn on the map
   activeFloorLevel: FLOORS; // Keeps track of which floor rooms are being added to
   selectedSectionId: string | null;
   showAllSectionPoints: boolean;
-  building: IBuilding | null;
+  isEditingBuilding: boolean;
+  building: IBuilding;
 }
 
 const initialState: MapState = {
   procedure: "idle",
-  sections: [],
   perimeter: [],
   draftPoints: [],
   activeFloorLevel: null as unknown as FLOORS, // Should be set when tracing rooms
   selectedSectionId: null,
   showAllSectionPoints: false,
-  building: null,
+  isEditingBuilding: true,
+  building: { id: "", address: "", alternateNames: [], college: "College of Arts and Sciences", name: "", marker: [0, 0], polygon: [], sections: [], type: "Academic Building", floors: [] },
 };
 
-type BuildingCommonKeys = "name" | "alternateNames" | "address" | "floors" | "type" | "polygon" | "sections"; // Keys that are common in Building
+type BuildingCommonKeys = "name" | "alternateNames" | "address" | "floors" | "type" | "polygon"; // Keys that are common in Building
 type BuildingOnlyUpdate = Pick<IRegBuilding, BuildingCommonKeys> | Pick<IAcadBuilding, BuildingCommonKeys | "college">;
 
 function createBuildingMapStore() {
@@ -71,7 +71,7 @@ function createBuildingMapStore() {
 
     deleteSection: (id: string) =>
       update((state) => {
-        const newSections = state.sections.filter((s) => s.id !== id);
+        const newSections = state.building.sections.filter((s) => s.id !== id);
         const newSelection = state.selectedSectionId === id ? null : state.selectedSectionId;
 
         return {
@@ -88,13 +88,16 @@ function createBuildingMapStore() {
     setShowAllSectionPoints: (show: boolean) => update((state) => ({ ...state, showAllSectionPoints: show })),
 
     // --- Committing Drafts to Final State ---
-    commitDraftPointsAsSection: () =>
+    saveAsSection: () =>
       update((state) => {
         if (state.draftPoints.length < 3) return state; // Needs to be a valid polygon
         return {
           ...state,
-          sections: [...state.sections, { id: generateNextId(state.sections, "Section"), polygon: state.draftPoints }],
           draftPoints: [], // Reset for the next section
+          building: {
+            ...state.building,
+            sections: [...state.building.sections, { id: generateNextId(state.building.sections, "Section"), polygon: state.draftPoints }],
+          },
         };
       }),
 
@@ -113,6 +116,7 @@ function createBuildingMapStore() {
 
       update((state) => ({
         ...state,
+        isEditingBuilding: false,
         building:
           building.type === BUILDING_TYPES.ACADEMIC
             ? {
@@ -120,23 +124,23 @@ function createBuildingMapStore() {
                 marker: getBuildingLabelPoint(building.polygon),
                 polygon: building.polygon,
                 floors: building.floors,
-                sections: building.sections,
                 name: building.name,
                 address: building.address,
                 alternateNames: building.alternateNames,
                 type: building.type,
                 college: building.college,
+                sections: state.building?.sections ?? [],
               }
             : {
                 id: generateNextId(buildings, ""),
                 marker: getBuildingLabelPoint(building.polygon),
                 polygon: building.polygon,
                 floors: building.floors,
-                sections: building.sections,
                 name: building.name,
                 address: building.address,
                 alternateNames: building.alternateNames,
                 type: building.type,
+                sections: state.building?.sections ?? [],
               },
       }));
     },
@@ -160,6 +164,10 @@ function createBuildingMapStore() {
       });
     },
 
+    setIsEditingBuilding: (isEditing: boolean) => {
+      update((state) => ({ ...state, isEditingBuilding: isEditing }));
+    },
+
     // --- Resets ---
     resetAll: () => set(initialState),
   };
@@ -169,5 +177,5 @@ export const drawBuildingStore = createBuildingMapStore();
 
 export const selectedSection = derived(drawBuildingStore, ($state) => {
   if (!$state.selectedSectionId) return null;
-  return $state.sections.find((s) => s.id === $state.selectedSectionId) || null;
+  return $state.building?.sections.find((s) => s.id === $state.selectedSectionId) || null;
 });

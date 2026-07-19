@@ -6,7 +6,7 @@ export async function copyBuildingJsonToClipboard(building: IBuilding) {
   try {
     // navigator.clipboard requires a secure context (HTTPS or localhost)
     await navigator.clipboard.writeText(jsonString);
-    console.log("Copied JSON to clipboard:\n", jsonString);
+    // console.log("Copied JSON to clipboard:\n", jsonString);
     alert("Successfully copied building JSON to clipboard!");
   } catch (err) {
     console.error("Failed to copy text: ", err);

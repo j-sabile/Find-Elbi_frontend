@@ -13,7 +13,7 @@
   let address = "";
   let floors: IFloor[] = [{ levelIndex: 0, label: "Ground Floor", rooms: [] }];
 
-  $: isBuildingSaved = $drawBuildingStore.building !== null;
+  $: isEditing = $drawBuildingStore.isEditingBuilding;
 
   $: alternateNames = alternateNamesStr
     .split(",")
@@ -33,7 +33,7 @@
       type: type,
       college: college,
       polygon: currentSection.polygon,
-      sections: $drawBuildingStore.sections,
+      // sections: $drawBuildingStore.building.sections,
     });
   }
 </script>
@@ -46,12 +46,12 @@
     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none"
     placeholder="e.g. CAS Annex 3"
     bind:value={name}
-    disabled={isBuildingSaved}
+    disabled={!isEditing}
   />
 
   <!-- svelte-ignore a11y-label-has-associated-control -->
   <label class="text-xs text-gray-500 font-medium">Building Type</label>
-  <select class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 outline-none" bind:value={type} disabled={isBuildingSaved}>
+  <select class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 outline-none" bind:value={type} disabled={!isEditing}>
     {#each Object.values(BUILDING_TYPES) as t}
       <option value={t}>{t}</option>
     {/each}
@@ -60,7 +60,7 @@
   {#if type === BUILDING_TYPES.ACADEMIC}
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="text-xs text-gray-500 font-medium">College</label>
-    <select class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 outline-none" bind:value={college} disabled={isBuildingSaved}>
+    <select class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 outline-none" bind:value={college} disabled={!isEditing}>
       {#each Object.values(COLLEGES) as t}
         <option value={t}>{t}</option>
       {/each}
@@ -74,7 +74,7 @@
     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none"
     placeholder="e.g. Victoria M. Ela Avenue"
     bind:value={address}
-    disabled={isBuildingSaved}
+    disabled={!isEditing}
   />
 
   <!-- svelte-ignore a11y-label-has-associated-control -->
@@ -84,13 +84,13 @@
     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none"
     placeholder="e.g. Physci"
     bind:value={alternateNamesStr}
-    disabled={isBuildingSaved}
+    disabled={!isEditing}
   />
 
   <FloorCreator bind:floors />
 
   <div class="flex flex-row gap-2 mt-2">
-    {#if isBuildingSaved}
+    {#if !isEditing}
       <button
         class="inline-flex items-center w-full justify-center gap-2 rounded-lg text-black border-2 px-4 py-2 text-sm font-medium hover:bg-neutral-200 disabled:opacity-50 transition-colors duration-200"
         disabled={polygonPoints.length < 3}
@@ -101,10 +101,10 @@
     {/if}
     <button
       class="inline-flex items-center w-full justify-center gap-2 rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
-      disabled={polygonPoints.length < 3 || isBuildingSaved}
+      disabled={polygonPoints.length < 3 || !isEditing}
       on:click={handleSave}
     >
-      {isBuildingSaved ? "Building Saved" : "Save Building"}
+      {isEditing ? "Save Building" : "Building Saved"}
     </button>
   </div>
 </div>

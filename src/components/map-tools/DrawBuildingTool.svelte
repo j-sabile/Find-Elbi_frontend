@@ -133,7 +133,7 @@
   // --- COMMITTED SECTIONS REACTIVE BLOCK ---
   $: if ($mapInstance && $drawBuildingStore) {
     const map = $mapInstance;
-    const currentSections = $drawBuildingStore.sections;
+    const currentSections = $drawBuildingStore.building.sections;
     const currentSectionIds = new Set(currentSections.map((s) => s.id));
 
     // A. Clean up polygons
@@ -145,7 +145,7 @@
     });
 
     // B. Draw or Update sections
-    currentSections.forEach((section) => {
+    currentSections?.forEach((section) => {
       // USE STORE VARIABLE HERE
       const isSelected = $drawBuildingStore.selectedSectionId === section.id;
 
@@ -178,7 +178,7 @@
   $: if ($mapInstance && $drawBuildingStore) {
     const map = $mapInstance;
     const showGuides = $drawBuildingStore.showAllSectionPoints;
-    const sections = $drawBuildingStore.sections;
+    const sections = $drawBuildingStore.building?.sections;
 
     // 1. Always clear the old dots first so we don't infinitely stack them
     guidePointsLayer.clearLayers();
@@ -190,7 +190,7 @@
       }
     }
     // 3. If the toggle is ON, build the dots
-    else if (showGuides && sections.length > 0) {
+    else if (showGuides && sections && sections.length > 0) {
       // Ensure the layer container is on the map
       if (!map.hasLayer(guidePointsLayer)) {
         guidePointsLayer.addTo(map);
@@ -231,10 +231,3 @@
     }
   }
 </script>
-
-<div class="controls">
-  <button on:click={() => drawBuildingStore.setProcedure("generate_sections")}>Draw Sections</button>
-  <button on:click={() => drawBuildingStore.setProcedure("idle")}>Idle</button>
-  <button on:click={() => drawBuildingStore.removeLastDraftPoint()}>Undo</button>
-  <button on:click={() => drawBuildingStore.commitDraftPointsAsSection()}>Commit Polygon</button>
-</div>

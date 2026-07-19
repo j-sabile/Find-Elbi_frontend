@@ -27,7 +27,7 @@
   let draftLayers: L.FeatureGroup | null = null;
 
   // Reactive Data Sources
-  $: polygonPoints = $drawBuildingStore.sections.find((s) => $drawBuildingStore.selectedSectionId === s.id)?.polygon || [];
+  $: polygonPoints = $drawBuildingStore.building?.sections.find((s) => $drawBuildingStore.selectedSectionId === s.id)?.polygon || [];
   $: centroid = GeometryService.getCentroid(polygonPoints);
 
   onMount(() => {
