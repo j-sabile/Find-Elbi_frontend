@@ -13,7 +13,6 @@
   import BufferTool from "./map-tools/BufferTool.svelte";
   import MeasurementTool from "./map-tools/MeasurementTool.svelte";
   import NearestTool from "./map-tools/NearestTool.svelte";
-  import BuildingDrawTool from "./map-tools/BuildingDrawTool.svelte";
   import DrawBuildingTool from "./map-tools/DrawBuildingTool.svelte";
 
   // ─── Basemap Management ───

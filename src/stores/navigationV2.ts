@@ -163,7 +163,7 @@ derived([navigationStoreV2, dataStoreV2, mapInstance], ([$nav, $data, $mapInstan
 
     // Only zoom if no specific floor is selected
     if (!activeFloor) {
-      map.fitBounds(activeBuilding.polygon, { padding: [50, 50], maxZoom: 18 });
+      map.flyToBounds(activeBuilding.polygon, { padding: [50, 50], maxZoom: 19, duration: 1 });
     }
   }
 
@@ -188,7 +188,7 @@ derived([navigationStoreV2, dataStoreV2, mapInstance], ([$nav, $data, $mapInstan
 
     const allRoomCoords = activeFloor.rooms.flatMap((r) => r.polygon);
     if (allRoomCoords.length > 0) {
-      map.fitBounds(allRoomCoords, { padding: [50, 50], maxZoom: 19 });
+      map.flyToBounds(allRoomCoords, { padding: [50, 50], maxZoom: 20, duration: 0.75 });
     }
   }
 
