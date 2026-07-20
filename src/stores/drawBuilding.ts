@@ -4,7 +4,7 @@ import type { IRoom } from "../interfaces/IRoom";
 import { generateNextId } from "../utils/idGenerator";
 import type { IAcadBuilding, IBuilding, IRegBuilding, Section } from "../interfaces/IBuilding";
 import buildings from "../data/buildings";
-import { getBuildingLabelPoint } from "../utils/buildingGenerator";
+import { GeometryService } from "../services/GeometryService";
 // import { unfinishedData } from "../unfinishedData";
 
 // Define the 3 distinct drawing procedures
@@ -150,7 +150,7 @@ function createBuildingMapStore() {
           building.type === BUILDING_TYPES.ACADEMIC
             ? {
                 id: generateNextId(buildings, "BUILDING")[0],
-                marker: getBuildingLabelPoint(building.polygon),
+                marker: GeometryService.getBuildingLabelPoint(building.polygon),
                 polygon: building.polygon,
                 floors: building.floors,
                 name: building.name,
@@ -162,7 +162,7 @@ function createBuildingMapStore() {
               }
             : {
                 id: generateNextId(buildings, "BUILDING")[0],
-                marker: getBuildingLabelPoint(building.polygon),
+                marker: GeometryService.getBuildingLabelPoint(building.polygon),
                 polygon: building.polygon,
                 floors: building.floors,
                 name: building.name,

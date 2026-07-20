@@ -2,7 +2,6 @@
   import { drawBuildingStore, selectedSection } from "../../stores/drawBuilding";
   import { GeometryService } from "../../services/GeometryService";
   import { Eye, EyeOff, Trash } from "lucide-svelte";
-  import { parseNumberArray } from "../../utils/buildingGenerator";
   import { type Section } from "../../interfaces/IBuilding";
 
   const drawingTools = [
@@ -86,18 +85,18 @@
     let newPolygons: [number, number][][] = [];
 
     if (selectedTool === "generate_rectangle") {
-      newPolygons = [GeometryService.generateRectanglePoints(pts[0], pts[1], Number(toolParam) * (switchDirectionValue ? 1 : -1))];
+      newPolygons = [GeometryService.generateRectanglePointsHaversine(pts[0], pts[1], Number(toolParam), switchDirectionValue)];
     } else if (selectedTool === "generate_equally_spaced_points") {
-      newPolygons = [GeometryService.generateEquallySpaced(pts[0], pts[1], Number(toolParam))];
+      newPolygons = [GeometryService.generateEquallySpacedEquirectangular(pts[0], pts[1], Number(toolParam))];
       drawBuildingStore.clearDraft();
     } else if (selectedTool === "generate_points_along_segment") {
-      const distancesArray = parseNumberArray(toolParam);
+      const distancesArray = GeometryService.parseNumberArray(toolParam);
       if (distancesArray.length === 0) return [];
-      newPolygons = [GeometryService.generatePointsAlong(pts[0], pts[1], distancesArray)];
+      newPolygons = [GeometryService.generatePointsAlongEquirectangular(pts[0], pts[1], distancesArray)];
     } else if (selectedTool === "split_area_by_percentages") {
-      const distancesArray = parseNumberArray(toolParam);
+      const distancesArray = GeometryService.parseNumberArray(toolParam);
       if (distancesArray.length === 0) return [];
-      newPolygons = GeometryService.splitQuadrilateralByPercentages(pts, distancesArray, switchDirectionValue ? 0 : 1);
+      newPolygons = GeometryService.splitQuadrilateralByPercentagesHaversine(pts, distancesArray, switchDirectionValue ? 0 : 1);
     }
 
     const newSections: Section[] = newPolygons.map((p, ind) => ({ id: `SEC${ind + 1}`, polygon: p }));
