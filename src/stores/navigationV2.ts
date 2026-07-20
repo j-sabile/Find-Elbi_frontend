@@ -78,17 +78,17 @@ function createNavigationStoreV2() {
             searchInput: result.buildingName,
             searchResults: [],
           };
+        } else if (result.kind === "room") {
+          return {
+            ...s,
+            selectedBuildingId: result.buildingId,
+            selectedFloorIndex: result.floorLevelIndex,
+            selectedRoomId: result.roomId,
+            selectedRoomCode: result.roomCode,
+            searchInput: result.roomName,
+            searchResults: [],
+          };
         }
-        // else if (result.kind === "room" && result.room && result.floorLevel !== undefined) {
-        //   return {
-        //     ...s,
-        //     selectedBuildingId: result.building.id,
-        //     selectedFloorIndex: result.floorLevel,
-        //     // selectedRoomCode: result. || null, // Assuming ISearchResult has a room code
-        //     searchInput: result.name,
-        //     searchResults: [],
-        //   };
-        // }
         return s;
       });
     },
