@@ -60,7 +60,7 @@ function createNavigationStoreV2() {
     },
 
     selectRoom: (roomCode: string) => {
-      update((s) => ({ ...s, selectedRoomCode: roomCode }));
+      update((s) => ({ ...s, selectedRoomId: roomCode }));
     },
 
     selectSearchResult: (result: ISearchResult) => {

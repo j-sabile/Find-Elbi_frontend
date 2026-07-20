@@ -36,7 +36,7 @@
                 $navigationStoreV2.selectedRoomId === room.id
                   ? 'ring-2 ring-blue-500 border-transparent bg-blue-50/30'
                   : ''}"
-                on:click={() => navigationStoreV2.selectRoom(room.code)}
+                on:click={() => navigationStoreV2.selectRoom(room.id)}
               >
                 <div class="flex items-center justify-center w-10 h-10 rounded-lg border border-gray-100 bg-gray-50 shrink-0">
                   <BuildingTypeIconV2 type={building.type} />
